@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/signin_screen.dart';
-import 'package:non_attending/config/dio/app_dio.dart';
-import 'package:non_attending/config/dio/app_logger.dart';
+import 'package:non_attending/config/keys/pref_keys.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,10 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 40,),
-                custom(ontap: (){}, txt: "IT/ISE"),
-                custom(ontap: (){}, txt: "DIPLOMA"),
-                custom(ontap: (){}, txt: "DEGREE"),
+                const SizedBox(
+                  height: 40,
+                ),
+                custom(ontap: () {}, txt: "IT/ISE"),
+                custom(ontap: () {}, txt: "DIPLOMA"),
+                custom(ontap: () {}, txt: "DEGREE"),
               ],
             ),
           ),
@@ -63,8 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget custom({txt, required Function() ontap}){
-    return  Padding(
+
+  Widget custom({txt, required Function() ontap}) {
+    return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: GestureDetector(
         onTap: ontap,
@@ -72,10 +74,15 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 145,
           width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage("assets/images/homeCon.png", ),fit: BoxFit.fill,)
-          ),
+              image: DecorationImage(
+            image: AssetImage(
+              "assets/images/homeCon.png",
+            ),
+            fit: BoxFit.fill,
+          )),
           child: Center(
-            child: AppText.appText("$txt", shadow: true, fontSize: 50, fontWeight: FontWeight.w800),
+            child: AppText.appText("$txt",
+                shadow: true, fontSize: 50, fontWeight: FontWeight.w800),
           ),
         ),
       ),
@@ -91,6 +98,20 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+  var token;
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
+
+  getUserData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      token = pref.getString(PrefKey.authorization);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -104,16 +125,25 @@ class _MyDrawerState extends State<MyDrawer> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
             child: Column(
               children: [
-                customColumn(
-                    onTap: () {
-                      pushUntil(context, const SignInScreen());
-                    },
-                    text: "Login"),
+                if (token == null)
+                  customColumn(
+                      onTap: () {
+                        pushUntil(context, const SignInScreen());
+                      },
+                      text: "Login"),
                 customColumn(onTap: () {}, text: "Cart"),
                 customColumn(onTap: () {}, text: "My Courses"),
                 customColumn(onTap: () {}, text: "Privacy policy"),
                 customColumn(onTap: () {}, text: "Terms & Conditions"),
-                customColumn(onTap: () {}, text: "Logout"),
+                if (token != null)
+                  customColumn(
+                      onTap: () async {
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        pref.clear();
+                        pushUntil(context, const SignInScreen());
+                      },
+                      text: "Logout"),
               ],
             ),
           )),

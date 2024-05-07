@@ -266,9 +266,11 @@ class _SignInScreenState extends State<SignInScreen> {
             isLoading = false;
           });
           var token = responseData["token"];
-          print("token $token");
+          var id = responseData["User"]["id"];
+          var userId = id.toString();
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString(PrefKey.authorization, token ?? '');
+          prefs.setString(PrefKey.id, userId);
 
           Navigator.pushAndRemoveUntil(
               context,

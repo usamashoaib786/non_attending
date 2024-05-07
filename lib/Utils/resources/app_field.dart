@@ -32,6 +32,7 @@ class CustomAppFormField extends StatefulWidget {
   final String? prefixImge;
   final InputBorder? focusedErrorBorder;
   final InputBorder? errorBorder;
+  final bool? readOnly;
 
   const CustomAppFormField({
     super.key,
@@ -65,6 +66,7 @@ class CustomAppFormField extends StatefulWidget {
     this.errorBorder,
     this.focusedErrorBorder,
     this.cursorColor,
+    this.readOnly,
   });
 
   @override
@@ -82,6 +84,7 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
           color: AppTheme.white,
           borderRadius: BorderRadius.circular(8)),
       child: TextField(
+        readOnly: widget.readOnly ?? false,
         controller: widget.controller,
         cursorColor: AppTheme.white,
         cursorHeight: 20,

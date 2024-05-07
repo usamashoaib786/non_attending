@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/splash_screen.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,11 +15,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Non Attending',
-      theme: ThemeData(),
-      home: const SplashScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ApiProvider>(create: (_) => ApiProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Non Attending',
+        theme: ThemeData(),
+        home: const SplashScreen(),
+      ),
     );
   }
 }

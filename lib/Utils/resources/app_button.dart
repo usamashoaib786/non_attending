@@ -31,20 +31,20 @@ class AppButton {
         width: width,
         height: height,
         decoration: BoxDecoration(
-            boxShadow: [
-              blurContainer == true
-                  ? const BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 2,
-                      offset: Offset(0.0, 4))
-                  : const BoxShadow()
+          boxShadow: const [
+            BoxShadow(
+                color: Color.fromARGB(255, 145, 158, 222), blurRadius: 2, offset: Offset(2, 4))
+          ],
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(255, 219, 175, 71), // 43%
+              Color.fromARGB(255, 223, 214, 192), // 7.74%
             ],
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(radius ?? 10),
-            border: border == false
-                ? null
-                : Border.all(
-                    color: borderColor ?? AppTheme.appColor, width: 1)),
+          ),
+          borderRadius: BorderRadius.circular(radius ?? 10),
+        ),
         child: AppText.appText(text,
             fontFamily: fontFamily,
             fontSize: fontSize,
