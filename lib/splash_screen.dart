@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Authentication/signin_screen.dart';
+import 'package:non_attending/View/bottomNavBar/bottom_bar.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,39 +18,21 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 2), () {
-      getUserCredentials(context);
+      pushReplacement(context,  BottomNavView());
     });
-    // Use this method to get user credentials if needed
   }
 
-  void getUserCredentials(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? token = prefs.getString(PrefKey.authorization);
-
-    if (token != null && token.isNotEmpty) {
-    } else {}
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(),
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            height: 500,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: Image.asset(
-                "assets/images/logo.png",
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
+        child: Image.asset(
+          "assets/images/bgimage.png",
+          fit: BoxFit.fill,
         ),
       ),
     );

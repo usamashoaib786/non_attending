@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 
-
 class AppText {
-  static Widget  appText(String text,
+  static Widget appText(String text,
       {TextAlign? textAlign,
       Color? textColor,
       double? fontSize,
@@ -12,6 +11,8 @@ class AppText {
       TextBaseline? textBaseline,
       TextOverflow? overflow,
       int? maxlines,
+      bool? shadow,
+      Color? bgcolor,
       double? letterSpacing,
       bool underLine = false,
       bool fontFamily = false}) {
@@ -20,7 +21,13 @@ class AppText {
       textAlign: textAlign,
       maxLines: maxlines,
       style: TextStyle(
-          color: textColor,
+          shadows: [
+            Shadow(
+                color:
+                    shadow == true ? AppTheme.whiteColor : Colors.transparent,
+                offset: const Offset(2, 2)),
+          ],
+          color: textColor?? AppTheme.blackColor,
           fontSize: fontSize,
           fontFamily: fontFamily == false ? 'Roboto' : "Inter",
           fontWeight: fontWeight,

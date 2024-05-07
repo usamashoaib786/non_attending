@@ -29,6 +29,7 @@ class CustomAppFormField extends StatefulWidget {
   final TextStyle? hintStyle;
   final TextStyle? style;
   final String? errorStyle;
+  final String? prefixImge;
   final InputBorder? focusedErrorBorder;
   final InputBorder? errorBorder;
 
@@ -37,6 +38,7 @@ class CustomAppFormField extends StatefulWidget {
     this.containerBorderCondition = false,
     required this.texthint,
     required this.controller,
+    this.prefixImge,
     this.validator,
     this.height,
     this.width,
@@ -73,30 +75,42 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: 45,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xff464646)),
+          border: Border.all(color: const Color(0xff2042F3)),
           color: AppTheme.white,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(8)),
       child: TextField(
         controller: widget.controller,
         cursorColor: AppTheme.white,
         cursorHeight: 20,
+        textAlign: TextAlign.center,
         cursorWidth: 2,
         keyboardType: TextInputType.name,
         decoration: InputDecoration(
-            prefixIcon: widget.prefixIcon,
+            prefixIcon: Container(
+              width: 50,
+              decoration: BoxDecoration(
+                  border:
+                      Border(right: BorderSide(color: AppTheme.blackColor))),
+              child: Center(
+                child: Image.asset(
+                  "${widget.prefixImge}",
+                  height: 21,
+                ),
+              ),
+            ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 50,
             ),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(8),
             hintText: widget.texthint,
-            hintStyle: const TextStyle(
-                color: Color.fromARGB(255, 181, 169, 169),
-                fontSize: 16,
-                fontWeight: FontWeight.w400),
+            hintStyle: TextStyle(
+                color: AppTheme.blackColor,
+                fontSize: 19,
+                fontWeight: FontWeight.w200),
             isDense: true),
       ),
     );
@@ -127,6 +141,7 @@ class CustomAppPasswordfield extends StatefulWidget {
   final Color? cursorColor;
   final TextStyle? hintStyle;
   final TextStyle? style;
+  final String? prefixImge;
   final TextStyle? errorStyle;
   final InputBorder? focusedErrorBorder;
   final InputBorder? errorBorder;
@@ -158,7 +173,8 @@ class CustomAppPasswordfield extends StatefulWidget {
       this.style,
       this.errorStyle,
       this.errorBorder,
-      this.focusedErrorBorder});
+      this.focusedErrorBorder,
+      this.prefixImge});
 
   @override
   State<CustomAppPasswordfield> createState() => _CustomAppPasswordfieldState();
@@ -177,48 +193,44 @@ class _CustomAppPasswordfieldState extends State<CustomAppPasswordfield> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 60,
-        color: Colors.red,
+        height: 45,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xff2042F3)),
+            color: AppTheme.white,
+            borderRadius: BorderRadius.circular(8)),
         child: TextFormField(
-          textAlignVertical: TextAlignVertical.center,
-          onChanged: widget.onChanged,
-          onTap: widget.onTap,
-          onTapOutside: widget.onTapOutside,
-          onFieldSubmitted: widget.onFieldSubmitted,
-          cursorHeight: widget.cursorHeight,
-          textAlign: widget.textAlign,
-          key: widget.key,
-          obscureText: _obscureText,
-          validator: widget.validator,
           controller: widget.controller,
-          cursorColor: widget.cursorColor,
-          style: widget.style,
+          cursorColor: AppTheme.white,
+          cursorHeight: 20,
+          textAlign: TextAlign.center,
+          cursorWidth: 2,
+          keyboardType: TextInputType.name,
+          obscureText: _obscureText,
           decoration: InputDecoration(
-              errorText: widget.errorText,
-              errorStyle: widget.errorStyle,
-              errorBorder: widget.errorBorder,
-              focusedErrorBorder: widget.focusedErrorBorder,
-              prefixIconColor: widget.prefixIconColor,
-              suffixIconColor: widget.suffixIconColor,
-              prefix: widget.prefix,
-              suffix: widget.suffix,
-              prefixIcon: widget.prefixIcon,
-              contentPadding: const EdgeInsets.only(
-                top: 20,
-                left: 5,
+              prefixIcon: Container(
+                width: 50,
+                decoration: BoxDecoration(
+                    border:
+                        Border(right: BorderSide(color: AppTheme.blackColor))),
+                child: Center(
+                  child: Image.asset(
+                    "${widget.prefixImge}",
+                    height: 21,
+                  ),
+                ),
               ),
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.appColor)),
-              disabledBorder:
-                  const UnderlineInputBorder(borderSide: BorderSide.none),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                color: AppTheme.appColor,
-              )),
-              border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.appColor)),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 50,
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(8),
               hintText: widget.texthint,
-              hintStyle: widget.hintStyle,
+              hintStyle: TextStyle(
+                  color: AppTheme.blackColor,
+                  fontSize: 19,
+                  fontWeight: FontWeight.w200),
+              isDense: true,
               suffixIcon: InkWell(
                 onTap: () {
                   setState(() {
@@ -226,12 +238,12 @@ class _CustomAppPasswordfieldState extends State<CustomAppPasswordfield> {
                   });
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 13),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
                   child: Icon(
                     _obscureText
                         ? Icons.visibility_off_outlined
                         : Icons.visibility_outlined,
-                    color: AppTheme.appColor,
+                    color: AppTheme.blue,
                   ),
                 ),
               )),
