@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
@@ -10,6 +11,7 @@ import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
+import 'package:non_attending/View/PDF%20viewer/pdf_screen.dart';
 import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
@@ -230,9 +232,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              setState(() {
-                                info = false;
-                              });
+                              if (info == true) {
+                                setState(() {
+                                  info = false;
+                                  apiProvider.getSavedData(
+                                      dio: dio,
+                                      context: context,
+                                      userId: userId);
+                                });
+                              }
                             },
                             child: AppText.appText("Saved Files",
                                 fontSize: 19, fontWeight: FontWeight.w400),
@@ -240,7 +248,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-                    info == true ? profileColumn() : savedColumn()
+                    info == true
+                        ? profileColumn()
+                        : apiProvider.savedData == null
+                            ? Padding(
+                              padding: const EdgeInsets.all(30.0),
+                              child: CircularProgressIndicator(
+                                color: AppTheme.blackColor,
+                              ),
+                            )
+                            : SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height - 405,
+                                child: savedColumn()),
+                    // const SizedBox(height: 20,)
                   ],
                 ),
               ),
@@ -313,8 +334,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget savedColumn() {
-    return const Column(
-      children: [],
+    final apiProvider = Provider.of<ApiProvider>(context, listen: false);
+
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: apiProvider.savedData.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20, top: 20),
+              child: GestureDetector(
+                onTap: () {
+                  if (apiProvider.savedData[index]["video_id"] == null) {
+                    push(
+                        context,
+                        PdfViewerPage(
+                            url:
+                                "https://test.nonattending.com/${apiProvider.savedData[index]["chapters"]["pdf_path"]}"));
+                  } else {}
+                },
+                child: Container(
+                  height: 70,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: const Color.fromARGB(255, 128, 141, 204)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 8),
+                    child: Stack(
+                      children: [
+                        Image.asset(
+                          apiProvider.savedData[index]["video_id"] == null
+                              ? "assets/images/pdfImg.png"
+                              : "assets/images/vedioImg.png",
+                          height: 50,
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              AppText.appText(
+                                  "${apiProvider.savedData[index]["course_title"]}",
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w600),
+                              AppText.appText(
+                                  apiProvider.savedData[index]["video_id"] ==
+                                          null
+                                      ? "${apiProvider.savedData[index]["chapters"]["title"]}"
+                                      : apiProvider.savedData[index]
+                                                  ["videos"] ==
+                                              null
+                                          ? ""
+                                          : "${apiProvider.savedData[index]["videos"]["title"]}",
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w400),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (index == apiProvider.savedData.length - 1)
+              const SizedBox(
+                height: 20,
+              )
+          ],
+        );
+      },
     );
   }
 
@@ -399,5 +490,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
-
 }

@@ -6,9 +6,6 @@ import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/otpScreen.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
-import 'package:non_attending/config/keys/app_urls.dart';
-import 'package:non_attending/config/keys/pref_keys.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

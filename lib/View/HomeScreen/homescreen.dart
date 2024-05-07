@@ -3,6 +3,7 @@ import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/signin_screen.dart';
+import 'package:non_attending/View/Cart%20Screens/cart_screen.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,7 +132,9 @@ class _MyDrawerState extends State<MyDrawer> {
                         pushUntil(context, const SignInScreen());
                       },
                       text: "Login"),
-                customColumn(onTap: () {}, text: "Cart"),
+                customColumn(onTap: () {
+                  // push(context, const CartScreen());
+                }, text: "Cart"),
                 customColumn(onTap: () {}, text: "My Courses"),
                 customColumn(onTap: () {}, text: "Privacy policy"),
                 customColumn(onTap: () {}, text: "Terms & Conditions"),

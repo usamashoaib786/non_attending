@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/Profile%20Screen/profile_screen.dart';
 import 'package:non_attending/View/Search%20Course%20Screen/search_corse.dart';
 
 class BottomNavView extends StatefulWidget {
+  final int? index;
+
+  const BottomNavView({super.key ,this.index});
   @override
   _BottomNavViewState createState() => _BottomNavViewState();
 }
@@ -19,6 +20,13 @@ class _BottomNavViewState extends State<BottomNavView> {
     const HomeScreen(),
     const ProfileScreen(),
   ];
+  @override
+  void initState() {
+    if (widget.index != null) {
+      _selectedIndex = widget.index!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

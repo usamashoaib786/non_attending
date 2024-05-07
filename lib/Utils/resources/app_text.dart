@@ -13,6 +13,7 @@ class AppText {
       int? maxlines,
       bool? shadow,
       Color? bgcolor,
+      Color? shadowColor,
       double? letterSpacing,
       bool underLine = false,
       bool fontFamily = false}) {
@@ -23,11 +24,12 @@ class AppText {
       style: TextStyle(
           shadows: [
             Shadow(
-                color:
-                    shadow == true ? AppTheme.whiteColor : Colors.transparent,
+                color: shadow == true
+                    ? shadowColor ?? AppTheme.whiteColor
+                    : Colors.transparent,
                 offset: const Offset(2, 2)),
           ],
-          color: textColor?? AppTheme.blackColor,
+          color: textColor ?? AppTheme.blackColor,
           fontSize: fontSize,
           fontFamily: fontFamily == false ? 'Roboto' : "Inter",
           fontWeight: fontWeight,

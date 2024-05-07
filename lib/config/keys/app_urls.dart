@@ -7,5 +7,6 @@ class AppUrls {
   static const String changePass = "updatepassword";
   static const String getProfile = "user";
   static const String updateProfile = "profileupdate";
+  static const String getSavedData= "getsavedpdf";
 
 }
