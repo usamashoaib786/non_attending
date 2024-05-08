@@ -65,7 +65,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         centerTitle: true,
         title: const Text(
           "PDF Viewer",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 800),
         ),
       ),
       body: isLoading

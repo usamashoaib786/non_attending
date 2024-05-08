@@ -4,6 +4,7 @@ import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_screen.dart';
+import 'package:non_attending/View/IT/ISE/it_ise_screen.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,9 +56,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   height: 40,
                 ),
-                custom(ontap: () {}, txt: "IT/ISE"),
-                custom(ontap: () {}, txt: "DIPLOMA"),
-                custom(ontap: () {}, txt: "DEGREE"),
+                custom(
+                    ontap: () {
+                      push(
+                          context,
+                          const ItScreen(
+                            title: "IT/ISE",
+                            id: 1,
+                          ));
+                    },
+                    txt: "IT/ISE"),
+                custom(
+                    ontap: () {
+                      push(
+                          context,
+                          const ItScreen(
+                            title: "DIPLOMA",
+                            id: 2,
+                          ));
+                    },
+                    txt: "DIPLOMA"),
+                custom(
+                    ontap: () {
+                      push(
+                          context,
+                          const ItScreen(
+                            title: "DEGREE",
+                            id: 3,
+                          ));
+                    },
+                    txt: "DEGREE"),
               ],
             ),
           ),
@@ -132,9 +160,11 @@ class _MyDrawerState extends State<MyDrawer> {
                         pushUntil(context, const SignInScreen());
                       },
                       text: "Login"),
-                customColumn(onTap: () {
-                  // push(context, const CartScreen());
-                }, text: "Cart"),
+                customColumn(
+                    onTap: () {
+                      push(context, const CartScreen());
+                    },
+                    text: "Cart"),
                 customColumn(onTap: () {}, text: "My Courses"),
                 customColumn(onTap: () {}, text: "Privacy policy"),
                 customColumn(onTap: () {}, text: "Terms & Conditions"),

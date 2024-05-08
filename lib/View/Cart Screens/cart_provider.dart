@@ -1,29 +1,55 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_class.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Cart with ChangeNotifier {
-  final List<Product> _items = [];
+  List<Product> _products = [];
 
-  List<Product> get items => _items;
+  List<Product> get products => _products;
 
-  int get itemCount => _items.length;
-
-  double get totalAmount {
-    return _items.fold(0, (sum, product) => sum + product.price);
+  Future<void> loadProducts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final productList = prefs.getStringList('products');
+    if (productList != null) {
+      _products = productList.map((item) {
+        final map = json.decode(item);
+        return Product.fromMap(map);
+      }).toList();
+    }
   }
 
-  void addToCart(Product product) {
-    _items.add(product);
+  Future<void> clearProduct(Product product) async {
+    _products.remove(product);
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final productList = _products.map((product) {
+      return json.encode(product.toMap());
+    }).toList();
+
+    prefs.setStringList('products', productList);
   }
 
-  void removeFromCart(Product product) {
-    _items.remove(product);
+  Future<void> addProduct(Product product) async {
+    _products.add(product);
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final productList = _products.map((product) {
+      return json.encode(product.toMap());
+    }).toList();
+
+    prefs.setStringList('products', productList);
   }
 
-  void clearCart() {
-    _items.clear();
+  Future<void> clearAllProducts() async {
+    _products.clear();
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('products');
   }
+
+ 
 }

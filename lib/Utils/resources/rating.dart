@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:non_attending/Utils/resources/app_theme.dart';
 
 class StarRating extends StatelessWidget {
   final double rating;
@@ -21,7 +20,6 @@ class StarRating extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(starCount, (index) {
         if (index < rating.floor()) {
-          // Filled star
           return Icon(
             Icons.star,
             color: color,

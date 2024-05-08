@@ -8,5 +8,8 @@ class AppUrls {
   static const String getProfile = "user";
   static const String updateProfile = "profileupdate";
   static const String getSavedData= "getsavedpdf";
+  static const String getBranches= "branches";
+  static const String getSubjects= "subjects";
+  static const String getCourses= "courses";
 
 }

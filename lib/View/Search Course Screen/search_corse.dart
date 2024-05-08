@@ -20,6 +20,15 @@ class _SearchCourseScreenState extends State<SearchCourseScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String selectedText = "Course Type";
   List options = ["Paid", "Unpaid"];
+  List name = ["Applied Science", "Chemistry", "Bio"];
+  List price = [123, 456, 789];
+  List rating = [2, 4, 1.5];
+  List img = [
+    "assets/images/img1.jpeg",
+    "assets/images/img2.jpeg",
+    "assets/images/img3.jpeg"
+  ];
+
   bool isLoading = true;
   bool isShow = false;
   var userId;
@@ -176,7 +185,7 @@ class _SearchCourseScreenState extends State<SearchCourseScreen> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 10,
+                    itemCount: img.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(
@@ -201,18 +210,18 @@ class _SearchCourseScreenState extends State<SearchCourseScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    AppText.appText("250 INR",
+                                    AppText.appText("${price[index]} INR",
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600),
                                     const StarRating(
-                                      rating: 3.5,
+                                      rating: 2,
                                     ),
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                AppText.appText("Applied Sciences",
+                                AppText.appText("${name[index]}",
                                     fontSize: 24,
                                     fontWeight: FontWeight.w600,
                                     textColor: const Color(0xff0D2393)),
@@ -230,14 +239,11 @@ class _SearchCourseScreenState extends State<SearchCourseScreen> {
                                         fontWeight: FontWeight.w600),
                                     GestureDetector(
                                       onTap: () {
-                                        final product = Product(
-                                          id: 1,
-                                          name: 'Product 1',
-                                          price: 10.0,
-                                          rating: 2.0,
-                                          image: 'null',
-                                        );
-                                        cart.addToCart(product);
+                                        cart.addProduct(Product(
+                                            "${name[index]}",
+                                            "${price[index]}",
+                                            "${img[index]}",
+                                            2));
                                       },
                                       child: Image.asset(
                                         "assets/images/cart.png",
