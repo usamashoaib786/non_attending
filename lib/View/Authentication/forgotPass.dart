@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
@@ -159,40 +160,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       response = await dio.post(path: AppUrls.forgotPass, data: params);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode422) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });
 
           return;
         } else {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
             pushReplacement(

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
@@ -220,22 +221,22 @@ class _SignInScreenState extends State<SignInScreen> {
       response = await dio.post(path: AppUrls.signIn, data: params);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
@@ -255,7 +256,7 @@ class _SignInScreenState extends State<SignInScreen> {
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });
@@ -267,10 +268,16 @@ class _SignInScreenState extends State<SignInScreen> {
           });
           var token = responseData["token"];
           var id = responseData["User"]["id"];
+          var phone = responseData["User"]["mobile"];
+          var name = responseData["User"]["name"];
+          var email = responseData["User"]["email"];
           var userId = id.toString();
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString(PrefKey.authorization, token ?? '');
           prefs.setString(PrefKey.id, userId);
+          prefs.setString(PrefKey.name, name ?? "");
+          prefs.setString(PrefKey.email, email ?? "");
+          prefs.setString(PrefKey.phone, phone ?? "");
 
           Navigator.pushAndRemoveUntil(
               context,

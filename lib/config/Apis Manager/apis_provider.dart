@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
 
@@ -23,20 +24,20 @@ class ApiProvider extends ChangeNotifier {
       response = await dio.get(path: AppUrls.getProfile);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
 
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
 
         isLoading = false;
         notifyListeners();
@@ -72,20 +73,20 @@ class ApiProvider extends ChangeNotifier {
 
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
 
         isLoading = false;
         notifyListeners();
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
 
         isLoading = false;
         notifyListeners();

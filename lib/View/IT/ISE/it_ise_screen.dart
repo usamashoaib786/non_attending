@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Course%20View/course_view.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
@@ -23,7 +24,6 @@ class ItScreen extends StatefulWidget {
 }
 
 class _ItScreenState extends State<ItScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String selectedBranch = "Select Branch";
   String selectedSemester = "Select Semester";
   String selectedSubject = "Select Subject";
@@ -47,7 +47,11 @@ class _ItScreenState extends State<ItScreen> {
   var branchdata;
   var subjectData;
   var userId;
-  bool isLoading = true;
+  var email;
+  var phone;
+  var token;
+  bool isLoading = false;
+  bool isLoading1 = false;
   late AppDio dio;
   AppLogger logger = AppLogger();
 
@@ -64,6 +68,9 @@ class _ItScreenState extends State<ItScreen> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       userId = pref.getString(PrefKey.id);
+      email = pref.getString(PrefKey.email);
+      phone = pref.getString(PrefKey.phone);
+      token = pref.getString(PrefKey.authorization);
     });
   }
 
@@ -72,7 +79,6 @@ class _ItScreenState extends State<ItScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        key: _scaffoldKey,
         bottomNavigationBar: const BottomNav(),
         appBar: AppBar(
             backgroundColor: AppTheme.appColor,
@@ -91,7 +97,6 @@ class _ItScreenState extends State<ItScreen> {
             centerTitle: true,
             title: AppText.appText("${widget.title}",
                 fontSize: 36, fontWeight: FontWeight.w800)),
-        drawer: const MyDrawer(),
         body: Container(
             width: screenWidth,
             height: screenHeight,
@@ -363,25 +368,29 @@ class _ItScreenState extends State<ItScreen> {
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20.0),
-                    child: AppButton.appButton("Submit", onTap: () {
-                      if (branchId != null) {
-                        if (semId != null) {
-                          if (subId != null) {
-                            getCourses();
-                          } else {
-                            showSnackBar(context, "Select Subject");
-                          }
-                        } else {
-                          showSnackBar(context, "Select Semester");
-                        }
-                      } else {
-                        showSnackBar(context, "Select Branch");
-                      }
-                    },
-                        height: 46,
-                        width: 191,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600),
+                    child: isLoading1 == true
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : AppButton.appButton("Submit", onTap: () {
+                            if (branchId != null) {
+                              if (semId != null) {
+                                if (subId != null) {
+                                  getCourses();
+                                } else {
+                                  showSnackBar(context, "Select Subject");
+                                }
+                              } else {
+                                showSnackBar(context, "Select Semester");
+                              }
+                            } else {
+                              showSnackBar(context, "Select Branch");
+                            }
+                          },
+                            height: 46,
+                            width: 191,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600),
                   )
                 ],
               ),
@@ -443,33 +452,33 @@ class _ItScreenState extends State<ItScreen> {
 
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode422) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });
@@ -508,33 +517,33 @@ class _ItScreenState extends State<ItScreen> {
 
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode422) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });
@@ -557,7 +566,7 @@ class _ItScreenState extends State<ItScreen> {
   }
 
   void getCourses() async {
-    isLoading = true;
+    isLoading1 = true;
     Response response;
     int responseCode200 = 200; // For successful request.
     int responseCode400 = 400; // For Bad Request.
@@ -572,46 +581,55 @@ class _ItScreenState extends State<ItScreen> {
       "user_id": userId
     };
     try {
-      response = await dio.post(path: AppUrls.getSubjects, data: params);
+      response = await dio.post(path: AppUrls.getCourses, data: params);
 
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
-          isLoading = false;
+          isLoading1 = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
-          isLoading = false;
+          isLoading1 = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
-          isLoading = false;
+          isLoading1 = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
-          isLoading = false;
+          isLoading1 = false;
         });
       } else if (response.statusCode == responseCode422) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
-          isLoading = false;
+          isLoading1 = false;
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
-            isLoading = false;
+            isLoading1 = false;
           });
 
           return;
         } else {
           setState(() {
-            isLoading = false;
-            subjectData = responseData["subjects"];
+            isLoading1 = false;
+            var courseData = responseData["courses"];
+            push(
+                context,
+                CourseViewScreen(
+                  data: courseData,
+                  email: email,
+                  phone: phone,
+                  token: token,
+                  userId: userId,
+                ));
           });
         }
       }
@@ -619,7 +637,7 @@ class _ItScreenState extends State<ItScreen> {
       print("Something went Wrong ${e}");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
-        isLoading = false;
+        isLoading1 = false;
       });
     }
   }

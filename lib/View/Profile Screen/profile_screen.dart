@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
@@ -441,22 +442,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       response = await dio.post(path: AppUrls.updateProfile, data: formData);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
@@ -466,7 +467,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       } else if (response.statusCode == responseCode200) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });

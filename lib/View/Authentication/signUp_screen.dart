@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
@@ -187,40 +188,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
           path: "https://control.msg91.com/api/v5/otp", data: params);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode404) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode500) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode422) {
-        showSnackBar(context, "${responseData["message"]}");
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode201) {
         if (responseData["status"] == false) {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
           });
 
           return;
         } else {
-          showSnackBar(context, "${responseData["message"]}");
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
             pushReplacement(
