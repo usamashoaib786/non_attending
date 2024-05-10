@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:non_attending/Utils/resources/app_theme.dart';
@@ -41,8 +42,12 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   @override
   void initState() {
     loadNetwork(widget.url);
-
+    diableFuction();
     super.initState();
+  }
+
+  diableFuction() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override

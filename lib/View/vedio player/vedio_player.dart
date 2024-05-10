@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:video_player/video_player.dart';
@@ -20,6 +21,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
+    diableFuction();
     _controller = VideoPlayerController.network(widget.url)
       ..initialize().then((_) {
         setState(() {});
@@ -37,6 +39,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         });
       }
     });
+  }
+
+  diableFuction() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override
@@ -93,11 +99,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         IconButton(
                           icon: Icon(Icons.replay_10),
                           onPressed: () {
-                            _controller.seekTo(Duration(seconds: _controller.value.position.inSeconds - 10));
+                            _controller.seekTo(Duration(
+                                seconds:
+                                    _controller.value.position.inSeconds - 10));
                           },
                         ),
                         IconButton(
-                          icon: _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+                          icon: _isPlaying
+                              ? Icon(Icons.pause)
+                              : Icon(Icons.play_arrow),
                           onPressed: () {
                             setState(() {
                               if (_controller.value.isPlaying) {
@@ -111,14 +121,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                         IconButton(
                           icon: Icon(Icons.forward_10),
                           onPressed: () {
-                            _controller.seekTo(Duration(seconds: _controller.value.position.inSeconds + 10));
+                            _controller.seekTo(Duration(
+                                seconds:
+                                    _controller.value.position.inSeconds + 10));
                           },
                         ),
                       ],
                     ),
                     Slider(
-                   thumbColor: AppTheme.appColor,
-                   activeColor: AppTheme.appColor,
+                      thumbColor: AppTheme.appColor,
+                      activeColor: AppTheme.appColor,
                       value: _currentSliderValue,
                       min: 0,
                       max: _controller.value.duration!.inSeconds.toDouble(),

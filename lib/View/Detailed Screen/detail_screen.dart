@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
@@ -93,7 +94,13 @@ class _DetailScreenState extends State<DetailScreen> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWallet);
+    diableFuction();
+
     super.initState();
+  }
+
+  diableFuction() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   getUserDetail() async {
@@ -153,7 +160,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
           ),
         ),
-        child:  detailData == null
+        child: detailData == null
             ? const Center(
                 child: CircularProgressIndicator(),
               )

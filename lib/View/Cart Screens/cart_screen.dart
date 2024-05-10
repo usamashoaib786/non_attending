@@ -159,8 +159,22 @@ class _CartScreenState extends State<CartScreen> {
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: AppButton.appButton("Checkout All", onTap: () {
-                    if (token != null) {
+                    if (token != null ) {
+                      if (cart.products.isNotEmpty) {
                       push(context, const CheckOutScreen());
+                        
+                      } else {
+                        showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const CustomPopupDialog(
+                            image: "assets/images/oops.png",
+                            msg1: "",
+                            msg2: "You don't have any item in cart",
+                          );
+                        },
+                      );
+                      }
                     } else {
                       showDialog(
                         context: context,

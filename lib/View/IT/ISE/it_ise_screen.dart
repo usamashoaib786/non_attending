@@ -61,6 +61,7 @@ class _ItScreenState extends State<ItScreen> {
     logger.init();
     getBranches(id: widget.id);
     getUserDetail();
+    
     super.initState();
   }
 

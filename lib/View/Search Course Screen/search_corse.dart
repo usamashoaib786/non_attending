@@ -251,180 +251,196 @@ class _SearchCourseScreenState extends State<SearchCourseScreen> {
                             },
                           )),
                     ),
-                  coursesData == true
+                  isLoading == true
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: coursesData.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20.0, right: 20, top: 20),
-                              child: GestureDetector(
-                                onTap: () {
-                                  push(
-                                      context,
-                                      DetailScreen(
-                                        title: "${coursesData[index]["title"]}",
-                                        courseId: coursesData[index]["id"],
-                                      ));
-                                },
-                                child: Container(
-                                  width: 268,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                            "https://test.nonattending.com/${coursesData[index]["cover_image"]}",
-                                          ),
-                                          fit: BoxFit.fill,
-                                          opacity: 0.3),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                            color: Color.fromARGB(
-                                                255, 145, 158, 222),
-                                            blurRadius: 3,
-                                            offset: Offset(3, 5))
-                                      ],
-                                      borderRadius: BorderRadius.circular(27),
-                                      color: const Color.fromARGB(
-                                          255, 231, 224, 224)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            AppText.appText(
-                                                "${coursesData[index]["price"]} INR",
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600),
-                                            StarRating(
-                                              rating: coursesData[index]
-                                                          ["stars"] ==
-                                                      null
-                                                  ? 0.0
-                                                  : coursesData[index]["stars"]
-                                                      .toDouble(),
-                                            ),
+                      : coursesData == null
+                          ? const SizedBox.shrink()
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: coursesData.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20.0, right: 20, top: 20),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      push(
+                                          context,
+                                          DetailScreen(
+                                            title:
+                                                "${coursesData[index]["title"]}",
+                                            courseId: coursesData[index]["id"],
+                                          ));
+                                    },
+                                    child: Container(
+                                      width: 268,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                "https://test.nonattending.com/${coursesData[index]["cover_image"]}",
+                                              ),
+                                              fit: BoxFit.fill,
+                                              opacity: 0.3),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                                color: Color.fromARGB(
+                                                    255, 145, 158, 222),
+                                                blurRadius: 3,
+                                                offset: Offset(3, 5))
                                           ],
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        AppText.appText(
-                                            "${coursesData[index]["title"]}",
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600,
-                                            textColor: const Color(0xff0D2393)),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        coursesData[index]["type"] != "paid"
-                                            ? const SizedBox(
-                                                height: 10,
-                                              )
-                                            : coursesData[index]["purchased"] !=
-                                                    0
+                                          borderRadius:
+                                              BorderRadius.circular(27),
+                                          color: const Color.fromARGB(
+                                              255, 231, 224, 224)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                AppText.appText(
+                                                    "${coursesData[index]["price"]} INR",
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                                StarRating(
+                                                  rating: coursesData[index]
+                                                              ["stars"] ==
+                                                          null
+                                                      ? 0.0
+                                                      : coursesData[index]
+                                                              ["stars"]
+                                                          .toDouble(),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            AppText.appText(
+                                                "${coursesData[index]["title"]}",
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w600,
+                                                textColor:
+                                                    const Color(0xff0D2393)),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            coursesData[index]["type"] != "paid"
                                                 ? const SizedBox(
                                                     height: 10,
                                                   )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          if (token != null) {
-                                                            setState(() {
-                                                              courseId =
+                                                : coursesData[index]
+                                                            ["purchased"] !=
+                                                        0
+                                                    ? const SizedBox(
+                                                        height: 10,
+                                                      )
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              if (token !=
+                                                                  null) {
+                                                                setState(() {
+                                                                  courseId =
+                                                                      coursesData[
+                                                                              index]
+                                                                          [
+                                                                          "id"];
+                                                                  int amount = int.parse(
+                                                                      coursesData[index]
+                                                                              [
+                                                                              "price"]
+                                                                          .toString());
+                                                                  openCheckOut(
+                                                                      amount);
+                                                                });
+                                                              } else {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (BuildContext
+                                                                          context) {
+                                                                    return const CustomPopupDialog(
+                                                                      image:
+                                                                          "assets/images/oops.png",
+                                                                      msg1: "",
+                                                                      msg2:
+                                                                          "Please Login First",
+                                                                    );
+                                                                  },
+                                                                );
+                                                              }
+                                                            },
+                                                            child: AppText.appText(
+                                                                "Buy Now",
+                                                                shadow: true,
+                                                                shadowColor:
+                                                                    AppTheme
+                                                                        .blue,
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              cart.addProduct(Product(
+                                                                  "${coursesData[index]["title"]}",
+                                                                  "${coursesData[index]["price"]}",
+                                                                  "${coursesData[index]["cover_image"]}",
                                                                   coursesData[
                                                                           index]
-                                                                      ["id"];
-                                                              int amount = int.parse(
-                                                                  coursesData[index]
-                                                                          [
-                                                                          "price"]
-                                                                      .toString());
-                                                              openCheckOut(
-                                                                  amount);
-                                                            });
-                                                          } else {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder:
-                                                                  (BuildContext
-                                                                      context) {
-                                                                return const CustomPopupDialog(
-                                                                  image:
-                                                                      "assets/images/oops.png",
-                                                                  msg1: "",
-                                                                  msg2:
-                                                                      "Please Login First",
-                                                                );
-                                                              },
-                                                            );
-                                                          }
-                                                        },
-                                                        child: AppText.appText(
-                                                            "Buy Now",
-                                                            shadow: true,
-                                                            shadowColor:
-                                                                AppTheme.blue,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          cart.addProduct(Product(
-                                                              "${coursesData[index]["title"]}",
-                                                              "${coursesData[index]["price"]}",
-                                                              "${coursesData[index]["cover_image"]}",
-                                                              coursesData[index]
-                                                                  ["stars"],
-                                                              coursesData[index]
-                                                                  ["id"]));
+                                                                      ["stars"],
+                                                                  coursesData[
+                                                                          index]
+                                                                      ["id"]));
 
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return CustomPopupDialog(
-                                                                image:
-                                                                    "assets/images/happy.png",
-                                                                msg1:
-                                                                    "Hurray!!",
-                                                                color: AppTheme
-                                                                    .green,
-                                                                msg2:
-                                                                    "Successfully Added to Cart",
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  return CustomPopupDialog(
+                                                                    image:
+                                                                        "assets/images/happy.png",
+                                                                    msg1:
+                                                                        "Hurray!!",
+                                                                    color: AppTheme
+                                                                        .green,
+                                                                    msg2:
+                                                                        "Successfully Added to Cart",
+                                                                  );
+                                                                },
                                                               );
                                                             },
-                                                          );
-                                                        },
-                                                        child: Image.asset(
-                                                          "assets/images/cart.png",
-                                                          height: 40,
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                      ],
+                                                            child: Image.asset(
+                                                              "assets/images/cart.png",
+                                                              height: 40,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            );
-                          },
-                        )
+                                );
+                              },
+                            )
                 ],
               ),
             ),
