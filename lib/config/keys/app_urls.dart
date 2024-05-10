@@ -12,4 +12,11 @@ class AppUrls {
   static const String getSubjects = "subjects";
   static const String getCourses = "courses";
   static const String getCourseDetail = "coursedetails";
+  static const String savePdf = "savepdf";
+  static const String buyNow = "buynow";
+  static const String checkOut = "checkout";
+  static const String myCourses = "mycourses";
+  static const String review = "addreview";
+  static const String searchFree = "searchfreecourses";
+  static const String searhPaid = "searchpaidcourses";
 }

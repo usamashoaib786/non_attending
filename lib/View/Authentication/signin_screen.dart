@@ -128,9 +128,8 @@ class _SignInScreenState extends State<SignInScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 40.0),
                 child: isLoading == true
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppTheme.appColor,
                         ),
                       )
                     : GestureDetector(
@@ -282,7 +281,7 @@ class _SignInScreenState extends State<SignInScreen> {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                builder: (context) => BottomNavView(),
+                builder: (context) => const BottomNavView(),
               ),
               (route) => false);
         }

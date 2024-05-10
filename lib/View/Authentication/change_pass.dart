@@ -96,9 +96,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 40.0),
                 child: isLoading == true
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppTheme.appColor,
                         ),
                       )
                     : GestureDetector(

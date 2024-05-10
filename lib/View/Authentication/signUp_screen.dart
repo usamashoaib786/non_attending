@@ -98,9 +98,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 50.0),
                 child: isLoading == true
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppTheme.appColor,
                         ),
                       )
                     : GestureDetector(

@@ -2,11 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
+import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/resources/rating.dart';
+import 'package:non_attending/Utils/resources/review_popup.dart';
+import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Cart%20Screens/cart_class.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_provider.dart';
+import 'package:non_attending/View/PDF%20viewer/pdf_screen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
+import 'package:non_attending/View/vedio%20player/vedio_player.dart';
+import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
@@ -34,7 +42,7 @@ class _DetailScreenState extends State<DetailScreen> {
   var phone;
   var token;
   late Razorpay _razorpay;
-  void openCheckOut(amount, phone, email) async {
+  void openCheckOut({amount, phone, email}) async {
     amount = amount * 100;
     var options = {
       'key': "rzp_test_V90pgwENoCOEzq",
@@ -59,6 +67,9 @@ class _DetailScreenState extends State<DetailScreen> {
     Fluttertoast.showToast(
         msg: "Payment Successfull${response.paymentId!}",
         toastLength: Toast.LENGTH_SHORT);
+    final apiProvider = Provider.of<ApiProvider>(context, listen: false);
+    apiProvider.buyNow(
+        dio: dio, context: context, userId: userId, courseId: widget.courseId);
   }
 
   void handlePaymentError(PaymentFailureResponse response) {
@@ -142,35 +153,313 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
           ),
         ),
-        child: Column(
-          children: [
-            topContainer(),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  customCard(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: AppText.appText("${detailData["description"]}",
-                          textAlign: TextAlign.center,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: AppText.appText("Syllabus",
-                        fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                  customCard(height: 60.0, child: syllabusContainer())
-                ],
+        child:  detailData == null
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    topContainer(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          customCard(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: AppText.appText(
+                                  "${detailData["description"]}",
+                                  textAlign: TextAlign.center,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: AppText.appText("Syllabus",
+                                fontSize: 18, fontWeight: FontWeight.w500),
+                          ),
+                          customCard(height: 60.0, child: syllabusContainer()),
+                          for (int i = 0;
+                              i < detailData["chapters"].length;
+                              i++)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 15.0),
+                                  child: AppText.appText(
+                                      "${detailData["chapters"][i]["title"]}:",
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    if (token != null) {
+                                      if (detailData["purchased"] != 0) {
+                                        push(
+                                            context,
+                                            PdfViewerPage(
+                                                url:
+                                                    "https://test.nonattending.com/${detailData["chapters"][i]["pdf_path"]}"));
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return const CustomPopupDialog(
+                                              image: "assets/images/oops.png",
+                                              msg1: "OOPS!!",
+                                              msg2:
+                                                  "You haven't bought this course",
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return const CustomPopupDialog(
+                                            image: "assets/images/oops.png",
+                                            msg1: "",
+                                            msg2: "Please Login First",
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  child: customCard(
+                                      height: 50.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            AppText.appText("Click to view pdf",
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400),
+                                            AppButton.appButton(
+                                              "Save PDF",
+                                              width: 100,
+                                              onTap: () {
+                                                if (token != null) {
+                                                  if (detailData["purchased"] !=
+                                                      0) {
+                                                    savePdf(
+                                                        title: widget.title,
+                                                        type: "pdf",
+                                                        chapterId: detailData[
+                                                                "chapters"][i]
+                                                            ["id"]);
+                                                  } else {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return const CustomPopupDialog(
+                                                          image:
+                                                              "assets/images/oops.png",
+                                                          msg1: "OOPS!!",
+                                                          msg2:
+                                                              "You haven't bought this course",
+                                                        );
+                                                      },
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 15.0),
+                                  child: AppText.appText(
+                                      "${detailData["chapters"][i]["video_title"]}:",
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    if (token != null) {
+                                      if (detailData["purchased"] != 0) {
+                                        push(
+                                            context,
+                                            VideoPlayerScreen(
+                                                url:
+                                                    "https://test.nonattending.com/${detailData["chapters"][i]["video_path"]}"));
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return const CustomPopupDialog(
+                                              image: "assets/images/oops.png",
+                                              msg1: "OOPS!!",
+                                              msg2:
+                                                  "You haven't bought this course",
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return const CustomPopupDialog(
+                                            image: "assets/images/oops.png",
+                                            msg1: "",
+                                            msg2: "Please Login First",
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  child: customCard(
+                                      height: 50.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            AppText.appText(
+                                                "Click to Play video",
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400),
+                                            AppButton.appButton(
+                                              "Save Video",
+                                              width: 100,
+                                              onTap: () {
+                                                if (token != null) {
+                                                  if (detailData["purchased"] !=
+                                                      0) {
+                                                    savePdf(
+                                                        title: widget.title,
+                                                        type: "video",
+                                                        chapterId: detailData[
+                                                                "chapters"][i]
+                                                            ["id"]);
+                                                  } else {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return const CustomPopupDialog(
+                                                          image:
+                                                              "assets/images/oops.png",
+                                                          msg1: "OOPS!!",
+                                                          msg2:
+                                                              "You haven't bought this course",
+                                                        );
+                                                      },
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          detailData["purchased"] == 0
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AppButton.appButton("Buy Now", onTap: () {
+                                      if (token != null) {
+                                        setState(() {
+                                          int amount = int.parse(
+                                              detailData["price"].toString());
+                                          openCheckOut(
+                                              amount: amount,
+                                              phone: phone,
+                                              email: email);
+                                        });
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return const CustomPopupDialog(
+                                              image: "assets/images/oops.png",
+                                              msg1: "",
+                                              msg2: "Please Login First",
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                        height: 46,
+                                        width: screenWidth * 0.4,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500),
+                                    AppButton.appButton("Add to Cart",
+                                        onTap: () {
+                                      cart.addProduct(Product(
+                                          "${detailData["title"]}",
+                                          "${detailData["price"]}",
+                                          "${detailData["cover_image"]}",
+                                          detailData["stars"],
+                                          detailData["id"]));
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return CustomPopupDialog(
+                                            image: "assets/images/happy.png",
+                                            msg1: "Hurray!!",
+                                            color: AppTheme.green,
+                                            msg2: "Successfully Added to Cart",
+                                          );
+                                        },
+                                      );
+                                    },
+                                        height: 46,
+                                        width: screenWidth * 0.4,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500)
+                                  ],
+                                )
+                              : Align(
+                                  alignment: Alignment.center,
+                                  child: AppButton.appButton("Review",
+                                      onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return ReviewPopUp(
+                                          userId: userId,
+                                          courseId: widget.courseId,
+                                        );
+                                      },
+                                    );
+                                  },
+                                      height: 46.0,
+                                      width: screenWidth * 0.4,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            )
-          ],
-        ),
       ),
     );
   }
@@ -207,7 +496,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   height: 29,
                   width: 157,
                   color: AppTheme.blue,
-                  child: StarRating(rating: detailData["stars"] ?? 0),
+                  child: StarRating(
+                      rating: detailData["stars"] == null
+                          ? 0.0
+                          : detailData["stars"].toDouble()),
                 )
               ],
             ),
@@ -351,6 +643,85 @@ class _DetailScreenState extends State<DetailScreen> {
           setState(() {
             isLoading = false;
             detailData = responseData["course"];
+          });
+        }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Something went Wrong.");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void savePdf({chapterId, required type, required title}) async {
+    isLoading = true;
+    Response response;
+    int responseCode200 = 200; // For successful request.
+    int responseCode400 = 400; // For Bad Request.
+    int responseCode401 = 401; // For Unauthorized access.
+    int responseCode404 = 404; // For For data not found
+    int responseCode422 = 422; // For For data not found
+    int responseCode500 = 500; // Internal server error.
+    Map<String, dynamic> params = {
+      "user_id": userId,
+      "chapter_id": chapterId,
+      "type": "$type",
+      "course_title": "$title",
+    };
+    try {
+      response = await dio.post(path: AppUrls.savePdf, data: params);
+
+      var responseData = response.data;
+      if (response.statusCode == responseCode400) {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      } else if (response.statusCode == responseCode401) {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      } else if (response.statusCode == responseCode404) {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      } else if (response.statusCode == responseCode500) {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      } else if (response.statusCode == responseCode422) {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      } else if (response.statusCode == responseCode200) {
+        if (responseData["status"] == false) {
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
+          setState(() {
+            isLoading = false;
+          });
+
+          return;
+        } else {
+          setState(() {
+            isLoading = false;
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CustomPopupDialog(
+                  image: "assets/images/happy.png",
+                  msg1: "",
+                  color: AppTheme.green,
+                  msg2: type == "pdf"
+                      ? "Successfuly Save Pdf"
+                      : "Successfuly Save Video",
+                );
+              },
+            );
           });
         }
       }

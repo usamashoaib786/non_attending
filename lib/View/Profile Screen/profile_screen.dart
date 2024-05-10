@@ -13,6 +13,7 @@ import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/PDF%20viewer/pdf_screen.dart';
+import 'package:non_attending/View/vedio%20player/vedio_player.dart';
 import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
@@ -115,10 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         child: apiProvider.profileData == null
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: AppTheme.blackColor,
-                ),
+            ? const Center(
+                child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
                 child: Column(
@@ -252,12 +251,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     info == true
                         ? profileColumn()
                         : apiProvider.savedData == null
-                            ? Padding(
-                              padding: const EdgeInsets.all(30.0),
-                              child: CircularProgressIndicator(
-                                color: AppTheme.blackColor,
-                              ),
-                            )
+                            ? const Padding(
+                                padding: EdgeInsets.all(30.0),
+                                child: CircularProgressIndicator(),
+                              )
                             : SizedBox(
                                 height:
                                     MediaQuery.of(context).size.height - 405,
@@ -315,9 +312,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             if (edit == true)
               apiProvider.isLoading == true
-                  ? CircularProgressIndicator(
-                      color: AppTheme.blackColor,
-                    )
+                  ? const CircularProgressIndicator()
                   : AppButton.appButton("Update", onTap: () {
                       setState(() {
                         edit = false;
@@ -347,13 +342,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.only(left: 20.0, right: 20, top: 20),
               child: GestureDetector(
                 onTap: () {
-                  if (apiProvider.savedData[index]["video_id"] == null) {
+                  if (apiProvider.savedData[index]["save_type"] == "pdf") {
                     push(
                         context,
                         PdfViewerPage(
                             url:
                                 "https://test.nonattending.com/${apiProvider.savedData[index]["chapters"]["pdf_path"]}"));
-                  } else {}
+                  } else {
+                    push(
+                        context,
+                        VideoPlayerScreen(
+                            url:
+                                "https://test.nonattending.com/${apiProvider.savedData[index]["chapters"]["video_path"]}"));
+                  }
                 },
                 child: Container(
                   height: 70,
@@ -367,7 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Stack(
                       children: [
                         Image.asset(
-                          apiProvider.savedData[index]["video_id"] == null
+                          apiProvider.savedData[index]["save_type"] == "pdf"
                               ? "assets/images/pdfImg.png"
                               : "assets/images/vedioImg.png",
                           height: 50,
@@ -381,14 +382,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   fontSize: 19,
                                   fontWeight: FontWeight.w600),
                               AppText.appText(
-                                  apiProvider.savedData[index]["video_id"] ==
-                                          null
+                                  apiProvider.savedData[index]["save_type"] ==
+                                          "pdf"
                                       ? "${apiProvider.savedData[index]["chapters"]["title"]}"
                                       : apiProvider.savedData[index]
-                                                  ["videos"] ==
+                                                  ["chapters"] ==
                                               null
                                           ? ""
-                                          : "${apiProvider.savedData[index]["videos"]["title"]}",
+                                          : "${apiProvider.savedData[index]["chapters"]["title"]}/${apiProvider.savedData[index]["chapters"]["video_title"]}",
                                   fontSize: 19,
                                   fontWeight: FontWeight.w400),
                             ],

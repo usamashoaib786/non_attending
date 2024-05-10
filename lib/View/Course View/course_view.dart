@@ -9,6 +9,7 @@ import 'package:non_attending/View/Cart%20Screens/cart_class.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_provider.dart';
 import 'package:non_attending/View/Detailed%20Screen/detail_screen.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
+import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class _CourseViewScreenState extends State<CourseViewScreen> {
   late AppDio dio;
   AppLogger logger = AppLogger();
   late Razorpay _razorpay;
+  var courseId;
   void openCheckOut(amount) async {
     amount = amount * 100;
     var options = {
@@ -58,6 +60,10 @@ class _CourseViewScreenState extends State<CourseViewScreen> {
     Fluttertoast.showToast(
         msg: "Payment Successfull${response.paymentId!}",
         toastLength: Toast.LENGTH_SHORT);
+
+    final apiProvider = Provider.of<ApiProvider>(context, listen: false);
+    apiProvider.buyNow(
+        dio: dio, context: context, userId: widget.userId, courseId: courseId);
   }
 
   void handlePaymentError(PaymentFailureResponse response) {
@@ -213,6 +219,8 @@ class _CourseViewScreenState extends State<CourseViewScreen> {
                                                   onTap: () {
                                                     if (widget.token != null) {
                                                       setState(() {
+                                                        courseId = widget
+                                                            .data[index]["id"];
                                                         int amount = int.parse(
                                                             widget.data[index]
                                                                     ["price"]
@@ -251,7 +259,9 @@ class _CourseViewScreenState extends State<CourseViewScreen> {
                                                         "${widget.data[index]["price"]}",
                                                         "${widget.data[index]["cover_image"]}",
                                                         widget.data[index]
-                                                            ["stars"]));
+                                                            ["stars"],
+                                                        widget.data[index]
+                                                            ["id"]));
 
                                                     showDialog(
                                                       context: context,

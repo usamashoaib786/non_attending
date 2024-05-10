@@ -3,11 +3,13 @@ class Product {
   final String price;
   final String imageAsset;
   final rating;
+  final int id;
   Product(
     this.name,
     this.price,
     this.imageAsset,
     this.rating,
+    this.id,
   );
 
   // Add a factory method to create a Product from a map (for loading from SharedPreferences)
@@ -17,6 +19,7 @@ class Product {
       map['price'],
       map['imageAsset'],
       map['rating'],
+      map['id'],
     );
   }
 
@@ -26,7 +29,8 @@ class Product {
       'name': name,
       'price': price,
       'imageAsset': imageAsset,
-      'rating': rating
+      'rating': rating,
+      'id': id,
     };
   }
 }

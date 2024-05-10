@@ -21,8 +21,8 @@ class CustomAppFormField extends StatefulWidget {
   final TextAlign textAlign;
   final Widget? prefix;
   final Widget? suffix;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
+  final bool? prefixIcon;
+  final bool? suffixIcon;
   final Color? prefixIconColor;
   final Color? suffixIconColor;
   final Color? cursorColor;
@@ -33,6 +33,7 @@ class CustomAppFormField extends StatefulWidget {
   final InputBorder? focusedErrorBorder;
   final InputBorder? errorBorder;
   final bool? readOnly;
+  final int? lines;
 
   const CustomAppFormField({
     super.key,
@@ -67,6 +68,7 @@ class CustomAppFormField extends StatefulWidget {
     this.focusedErrorBorder,
     this.cursorColor,
     this.readOnly,
+    this.lines,
   });
 
   @override
@@ -77,13 +79,14 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 45,
+      height: widget.height ?? 45,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           border: Border.all(color: const Color(0xff2042F3)),
           color: AppTheme.white,
           borderRadius: BorderRadius.circular(8)),
       child: TextField(
+        maxLines: widget.lines ?? 1,
         readOnly: widget.readOnly ?? false,
         controller: widget.controller,
         cursorColor: AppTheme.white,
@@ -92,18 +95,20 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
         cursorWidth: 2,
         keyboardType: TextInputType.name,
         decoration: InputDecoration(
-            prefixIcon: Container(
-              width: 50,
-              decoration: BoxDecoration(
-                  border:
-                      Border(right: BorderSide(color: AppTheme.blackColor))),
-              child: Center(
-                child: Image.asset(
-                  "${widget.prefixImge}",
-                  height: 21,
-                ),
-              ),
-            ),
+            prefixIcon: widget.prefixIcon == true
+                ? null
+                : Container(
+                    width: 50,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(color: AppTheme.blackColor))),
+                    child: Center(
+                      child: Image.asset(
+                        "${widget.prefixImge}",
+                        height: 21,
+                      ),
+                    ),
+                  ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 50,
             ),
