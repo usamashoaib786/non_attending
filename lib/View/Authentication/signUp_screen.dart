@@ -99,8 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 padding: const EdgeInsets.only(top: 50.0),
                 child: isLoading == true
                     ? const Center(
-                        child: CircularProgressIndicator(
-                        ),
+                        child: CircularProgressIndicator(),
                       )
                     : GestureDetector(
                         onTap: () {
@@ -170,7 +169,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       isLoading = true;
     });
     var response;
-    int responseCode201 = 201; // For successful request.
+    int responseCode200 = 200; // For successful request.
     int responseCode400 = 400; // For Bad Request.
     int responseCode401 = 401; // For Unauthorized access.
     int responseCode404 = 404; // For For data not found
@@ -178,7 +177,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     int responseCode500 = 500; // Internal server error.
     Map<String, dynamic> params = {
-      "template_id": "661d0f5ad6fc0548a5691e93",
+      "template_id": "1107171681123790810",
       "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
       "mobile": _phoneController.text,
     };
@@ -211,29 +210,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         setState(() {
           isLoading = false;
         });
-      } else if (response.statusCode == responseCode201) {
-        if (responseData["status"] == false) {
-          Fluttertoast.showToast(msg: "${responseData["message"]}");
-          setState(() {
-            isLoading = false;
-          });
-
-          return;
-        } else {
-          Fluttertoast.showToast(msg: "${responseData["message"]}");
-          setState(() {
-            isLoading = false;
-            pushReplacement(
-                context,
-                OtpScreen(
-                  signUp: true,
-                  name: _nameController.text,
-                  email: _emailController.text,
-                  phone: _phoneController.text,
-                  password: _passController.text,
-                ));
-          });
-        }
+      } else if (response.statusCode == responseCode200) {
+        setState(() {
+          isLoading = false;
+          pushReplacement(
+              context,
+              OtpScreen(
+                signUp: true,
+                name: _nameController.text,
+                email: _emailController.text,
+                phone: _phoneController.text,
+                password: _passController.text,
+              ));
+        });
       }
     } catch (e) {
       print("Something went Wrong ${e}");

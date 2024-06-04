@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
@@ -5,9 +8,11 @@ import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/change_pass.dart';
+import 'package:non_attending/View/bottomNavBar/bottom_bar.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
+import 'package:non_attending/config/keys/headers.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -109,8 +114,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 padding: const EdgeInsets.only(top: 40.0),
                 child: isLoading == true
                     ? const Center(
-                        child: CircularProgressIndicator(
-                        ),
+                        child: CircularProgressIndicator(),
                       )
                     : GestureDetector(
                         onTap: () {
@@ -232,47 +236,24 @@ class _OtpScreenState extends State<OtpScreen> {
       isLoading = true;
     });
     var response;
-    int responseCode200 = 200; // For successful request.
-    int responseCode400 = 400; // For Bad Request.
-    int responseCode401 = 401; // For Unauthorized access.
-    int responseCode404 = 404; // For For data not found
-    int responseCode422 = 422; // For For data not found
-
-    int responseCode500 = 500; // Internal server error.
     Map<String, dynamic> params = {
       "otp": _otpController.text,
       "mobile": widget.phone,
     };
+Options options = Options(
+    headers: {
+      "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
+      HttpHeaders.acceptHeader: Application.json,
+    },
+  );
+
+     
     try {
-      response = await dio.post(path: "https://control.msg91.com/api/v5/otp/verify", data: params);
+      response = await dio.post(
+          path: "https://control.msg91.com/api/v5/otp/verify", data: params, options:options);
       var responseData = response.data;
-      if (response.statusCode == responseCode400) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading = false;
-        });
-      } else if (response.statusCode == responseCode401) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading = false;
-        });
-      } else if (response.statusCode == responseCode404) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading = false;
-        });
-      } else if (response.statusCode == responseCode500) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading = false;
-        });
-      } else if (response.statusCode == responseCode422) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading = false;
-        });
-      } else if (response.statusCode == responseCode200) {
-        if (responseData["status"] == false) {
+      if (response.statusCode == 200) {
+        if (responseData["type"] == "error") {
           Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
             isLoading = false;
@@ -355,16 +336,24 @@ class _OtpScreenState extends State<OtpScreen> {
             isLoading = false;
           });
           var token = responseData["token"];
-          print("token $token");
+          var id = responseData["User"]["id"];
+          var phone = responseData["User"]["mobile"];
+          var name = responseData["User"]["name"];
+          var email = responseData["User"]["email"];
+          var userId = id.toString();
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString(PrefKey.authorization, token ?? '');
+          prefs.setString(PrefKey.id, userId);
+          prefs.setString(PrefKey.name, name ?? "");
+          prefs.setString(PrefKey.email, email ?? "");
+          prefs.setString(PrefKey.phone, phone ?? "");
 
-          // Navigator.pushAndRemoveUntil(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => const BottomNavView(),
-          //     ),
-          //     (route) => false);
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BottomNavView(),
+              ),
+              (route) => false);
         }
       }
     } catch (e) {
