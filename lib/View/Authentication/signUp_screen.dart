@@ -177,7 +177,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     int responseCode500 = 500; // Internal server error.
     Map<String, dynamic> params = {
-      "template_id": "1107171681123790810",
+      "template_id": "665d915cd6fc0557fa2d78a2",
       "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
       "mobile": _phoneController.text,
     };
