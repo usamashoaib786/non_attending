@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
@@ -179,8 +181,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Map<String, dynamic> params = {
       "template_id": "665d915cd6fc0557fa2d78a2",
       "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
-      "mobile": _phoneController.text,
+      "mobile": "+91${_phoneController.text}",
+      // "mobile": _phoneController.text,
     };
+    log('-=-=- params -=- $params');
     try {
       response = await dio.post(
           path: "https://control.msg91.com/api/v5/otp", data: params);
@@ -213,13 +217,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else if (response.statusCode == responseCode200) {
         setState(() {
           isLoading = false;
+          log('-=- OTP SEND -=-');
           pushReplacement(
               context,
               OtpScreen(
                 signUp: true,
                 name: _nameController.text,
                 email: _emailController.text,
-                phone: _phoneController.text,
+                // phone: _phoneController.text,
+                phone: "+91${_phoneController.text}",
                 password: _passController.text,
               ));
         });

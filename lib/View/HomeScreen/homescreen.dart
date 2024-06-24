@@ -62,11 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       push(
                           context,
                           const ItScreen(
-                            title: "IT/ISE",
+                            title: "IT/ISc",
                             id: 1,
                           ));
                     },
-                    txt: "IT/ISE"),
+                    txt: "IT/ISc"),
                 custom(
                     ontap: () {
                       push(

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -45,6 +46,7 @@ class _OtpScreenState extends State<OtpScreen> {
     dio = AppDio(context);
     logger.init();
     super.initState();
+    log('-=-=-=- phone -=-=- ${widget.phone}');
   }
 
   @override
@@ -238,7 +240,7 @@ class _OtpScreenState extends State<OtpScreen> {
     var response;
     Map<String, dynamic> params = {
       "otp": _otpController.text,
-      "mobile": widget.phone,
+      "mobile": "${widget.phone}",
     };
 Options options = Options(
     headers: {
@@ -298,6 +300,7 @@ Options options = Options(
     try {
       response = await dio.post(path: AppUrls.signUp, data: params);
       var responseData = response.data;
+      log('-=-=- responseData -=-=- $responseData');
       if (response.statusCode == responseCode400) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {

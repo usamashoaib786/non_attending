@@ -10,6 +10,7 @@ import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/resources/rating.dart';
 import 'package:non_attending/Utils/resources/review_popup.dart';
 import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_class.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_provider.dart';
 import 'package:non_attending/View/PDF%20viewer/pdf_screen.dart';
@@ -622,6 +623,8 @@ class _DetailScreenState extends State<DetailScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+        pushUntil(context, const SignInScreen());
+
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -689,6 +692,8 @@ class _DetailScreenState extends State<DetailScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+        pushUntil(context, const SignInScreen());
+
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
