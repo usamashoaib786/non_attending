@@ -21,11 +21,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    diableFuction();
+    disableFunction();
     _controller = VideoPlayerController.network(widget.url)
       ..initialize().then((_) {
-      setState(() {});
-      _controller.play();
+        setState(() {});
+        _controller.play();
       });
     _controller.addListener(() {
       if (_controller.value.isPlaying) {
@@ -41,108 +41,79 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
   }
 
-  diableFuction() async {
+  disableFunction() async {
     await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final orientation = MediaQuery.of(context).orientation;
+    final isPortrait = orientation == Orientation.portrait;
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme.appColor,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Image.asset(
-              "assets/images/back.png",
-              height: 30,
-            ),
-          ),
-        ),
-        centerTitle: true,
-        title: AppText.appText("Video Player",
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            textColor: const Color(0xff0D2393)),
-      ),
+      appBar: isPortrait
+          ? AppBar(
+              backgroundColor: AppTheme.appColor,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    "assets/images/back.png",
+                    height: 30,
+                  ),
+                ),
+              ),
+              centerTitle: true,
+              title: AppText.appText("Video Player",
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  textColor: const Color(0xff0D2393)),
+            )
+          : null,
       body: Container(
-        width: screenWidth,
-        height: screenHeight,
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 237, 216, 167), // 43%
-              Color.fromARGB(255, 223, 214, 192), // 7.74%
-              Color.fromARGB(255, 231, 221, 198), // 22.45%
+              Color.fromARGB(255, 237, 216, 167),
+              Color.fromARGB(255, 223, 214, 192),
+              Color.fromARGB(255, 231, 221, 198),
             ],
           ),
         ),
         child: Center(
           child: _controller.value.isInitialized
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
-                    Row(
+              ? (isPortrait
+                  ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.replay_10),
-                          onPressed: () {
-                            _controller.seekTo(Duration(
-                                seconds:
-                                    _controller.value.position.inSeconds - 10));
-                          },
+                        AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller),
                         ),
-                        IconButton(
-                          icon: _isPlaying
-                              ? Icon(Icons.pause)
-                              : Icon(Icons.play_arrow),
-                          onPressed: () {
-                            setState(() {
-                              if (_controller.value.isPlaying) {
-                                _controller.pause();
-                              } else {
-                                _controller.play();
-                              }
-                            });
-                          },
+                        VideoControls(_controller, _isPlaying, _currentSliderValue, setState),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        Center(
+                          child: AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          ),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.forward_10),
-                          onPressed: () {
-                            _controller.seekTo(Duration(
-                                seconds:
-                                    _controller.value.position.inSeconds + 10));
-                          },
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: VideoControls(_controller, _isPlaying, _currentSliderValue, setState),
                         ),
                       ],
-                    ),
-                    Slider(
-                      thumbColor: AppTheme.appColor,
-                      activeColor: AppTheme.appColor,
-                      value: _currentSliderValue,
-                      min: 0,
-                      max: _controller.value.duration!.inSeconds.toDouble(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _currentSliderValue = value;
-                        });
-                        _controller.seekTo(Duration(seconds: value.toInt()));
-                      },
-                    ),
-                  ],
-                )
+                    ))
               : const CircularProgressIndicator(),
         ),
       ),
@@ -153,5 +124,53 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void dispose() {
     super.dispose();
     _controller.dispose();
+  }
+}
+
+class VideoControls extends StatelessWidget {
+  final VideoPlayerController controller;
+  final bool isPlaying;
+  final double currentSliderValue;
+  final Function setState;
+
+  const VideoControls(this.controller, this.isPlaying, this.currentSliderValue, this.setState);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        VideoProgressIndicator(controller, allowScrubbing: true),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.replay_10),
+              onPressed: () {
+                controller.seekTo(Duration(seconds: controller.value.position.inSeconds - 10));
+              },
+            ),
+            IconButton(
+              icon: isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+              onPressed: () {
+                setState(() {
+                  if (controller.value.isPlaying) {
+                    controller.pause();
+                  } else {
+                    controller.play();
+                  }
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.forward_10),
+              onPressed: () {
+                controller.seekTo(Duration(seconds: controller.value.position.inSeconds + 10));
+              },
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
