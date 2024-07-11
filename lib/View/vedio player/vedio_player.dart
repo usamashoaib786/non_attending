@@ -1,176 +1,245 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
-import 'package:non_attending/Utils/resources/app_text.dart';
-import 'package:non_attending/Utils/resources/app_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final String url;
+  final String? url;
 
-  const VideoPlayerScreen({Key? key, required this.url}) : super(key: key);
+  const VideoPlayerScreen({Key? key, this.url}) : super(key: key);
 
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
-  double _currentSliderValue = 0.0;
-  bool _isPlaying = false;
+  late VideoPlayerController _videoController;
+  late Future<void> _initializeVideoPlayerFuture;
+  bool _isVideoPlaying = false;
+  double _videoProgress = 0.0;
+  String? _videoError;
+  bool _showControls = false;
 
   @override
   void initState() {
-    super.initState();
-    disableFunction();
-    _controller = VideoPlayerController.network(widget.url)
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
+    _videoController = VideoPlayerController.network(widget.url!);
+
+    _initializeVideoPlayerFuture = _videoController.initialize().then((_) {
+      setState(() {});
+      _videoController.play(); // Auto-play the video
+      _isVideoPlaying = true;
+    }).catchError((error) {
+      setState(() {
+        _videoError = 'Failed to load video: $error';
       });
-    _controller.addListener(() {
-      if (_controller.value.isPlaying) {
-        setState(() {
-          _isPlaying = true;
-          _currentSliderValue = _controller.value.position.inSeconds.toDouble();
-        });
-      } else {
-        setState(() {
-          _isPlaying = false;
-        });
+    });
+    _videoController.addListener(() {
+      setState(() {
+        _videoProgress =
+            _videoController.value.position.inMilliseconds.toDouble();
+      });
+      if (_videoController.value.position >= _videoController.value.duration) {
+        _videoController
+            .seekTo(Duration.zero); // Restart the video when it reaches the end
+        _videoController.pause();
+        _isVideoPlaying = false;
       }
     });
-  }
-
-  disableFunction() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-    final isPortrait = orientation == Orientation.portrait;
-
-    return Scaffold(
-      appBar: isPortrait
-          ? AppBar(
-              backgroundColor: AppTheme.appColor,
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Image.asset(
-                    "assets/images/back.png",
-                    height: 30,
-                  ),
-                ),
-              ),
-              centerTitle: true,
-              title: AppText.appText("Video Player",
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  textColor: const Color(0xff0D2393)),
-            )
-          : null,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(255, 237, 216, 167),
-              Color.fromARGB(255, 223, 214, 192),
-              Color.fromARGB(255, 231, 221, 198),
-            ],
-          ),
-        ),
-        child: Center(
-          child: _controller.value.isInitialized
-              ? (isPortrait
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller),
-                        ),
-                        VideoControls(_controller, _isPlaying, _currentSliderValue, setState),
-                      ],
-                    )
-                  : Stack(
-                      children: [
-                        Center(
-                          child: AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio,
-                            child: VideoPlayer(_controller),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: VideoControls(_controller, _isPlaying, _currentSliderValue, setState),
-                        ),
-                      ],
-                    ))
-              : const CircularProgressIndicator(),
-        ),
-      ),
-    );
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   void dispose() {
+    _videoController.dispose();
+    // Reset preferred orientations when disposing the screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
-    _controller.dispose();
   }
-}
 
-class VideoControls extends StatelessWidget {
-  final VideoPlayerController controller;
-  final bool isPlaying;
-  final double currentSliderValue;
-  final Function setState;
+  void _toggleVideoPlayback() {
+    setState(() {
+      if (_isVideoPlaying) {
+        _videoController.pause();
+      } else {
+        _videoController.play();
+      }
+      _isVideoPlaying = !_isVideoPlaying;
+    });
+  }
 
-  const VideoControls(this.controller, this.isPlaying, this.currentSliderValue, this.setState);
+  void _onVideoSliderChanged(double value) {
+    setState(() {
+      final Duration duration = _videoController.value.duration;
+      final newPosition = value * duration.inMilliseconds.toDouble();
+      _videoController.seekTo(Duration(milliseconds: newPosition.round()));
+      _videoProgress = value;
+    });
+  }
+
+  String _formatDuration(Duration duration) {
+    final seconds = duration.inSeconds;
+    final minutes = (seconds / 60).floor();
+    final secondsRemainder = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${secondsRemainder.toString().padLeft(2, '0')}';
+  }
+
+  void _toggleControlsVisibility() {
+    setState(() {
+      _showControls = !_showControls;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        VideoProgressIndicator(controller, allowScrubbing: true),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.replay_10),
-              onPressed: () {
-                controller.seekTo(Duration(seconds: controller.value.position.inSeconds - 10));
-              },
-            ),
-            IconButton(
-              icon: isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-              onPressed: () {
-                setState(() {
-                  if (controller.value.isPlaying) {
-                    controller.pause();
-                  } else {
-                    controller.play();
-                  }
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.forward_10),
-              onPressed: () {
-                controller.seekTo(Duration(seconds: controller.value.position.inSeconds + 10));
-              },
-            ),
-          ],
+    // Set landscape mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
+    return WillPopScope(
+      onWillPop: () async {
+        // Reset preferred orientations when back button is pressed
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: true, // Show the back button
+          elevation: 0,
+          backgroundColor: Colors.transparent, // Make the app bar transparent
         ),
-      ],
+        extendBodyBehindAppBar: true, // Extend body behind the app bar
+        backgroundColor: Colors.black,
+        body: GestureDetector(
+          onTap: _toggleControlsVisibility,
+          child: Stack(
+            children: [
+              FutureBuilder(
+                future: _initializeVideoPlayerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (_videoError != null) {
+                      return Center(
+                        child: Text(
+                          // _videoError!,
+                          'Something went wrong. Please reload the page.',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+                    return Center(
+                      child: AspectRatio(
+                        aspectRatio: _videoController.value.aspectRatio,
+                        child: VideoPlayer(_videoController),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Failed to load video.',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+              Visibility(
+                visible: _showControls,
+                child: Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 20,
+                  child: Column(
+                    children: [
+                      Slider(
+                        value: _videoProgress,
+                        min: 0.0,
+                        max: _videoController.value.duration.inMilliseconds
+                            .toDouble(),
+                        onChanged: _onVideoSliderChanged,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              _formatDuration(_videoController.value.position),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              _formatDuration(_videoController.value.duration),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: _showControls && !_isVideoPlaying,
+                child: Center(
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 65,
+                      ),
+                      onPressed: _toggleVideoPlayback,
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: _showControls && _isVideoPlaying,
+                child: Center(
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.pause,
+                        color: Colors.white,
+                        size: 65,
+                      ),
+                      onPressed: _toggleVideoPlayback,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

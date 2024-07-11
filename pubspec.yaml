@@ -55,6 +55,10 @@ dependencies:
   fluttertoast: ^8.2.5
   video_player: ^2.8.6
   flutter_windowmanager: ^0.2.0
+  chewie: ^1.8.1
+  fijkplayer: ^0.11.0
+  better_player: ^0.0.84
+  share_plus: ^9.0.0
 
 flutter_icons:
   image_path: "assets/images/bgimage.png"

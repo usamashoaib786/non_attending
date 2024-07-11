@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
@@ -23,6 +24,7 @@ import 'package:non_attending/config/keys/app_urls.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -113,6 +115,15 @@ class _DetailScreenState extends State<DetailScreen> {
       token = pref.getString(PrefKey.authorization);
       getCourseDetail(id: userId, courseId: widget.courseId);
     });
+  }
+
+  void shareContent(BuildContext context) async {
+    final result =
+        await Share.share('check out my website https://example.com');
+
+    if (result.status == ShareResultStatus.success) {
+      print('Thank you for sharing my website!');
+    }
   }
 
   @override
@@ -518,9 +529,15 @@ class _DetailScreenState extends State<DetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset(
-                  "assets/images/Share.png",
-                  height: 31,
+                GestureDetector(
+                  onTap: () {
+                    print("Share All things");
+                    shareContent(context);
+                  },
+                  child: Image.asset(
+                    "assets/images/Share.png",
+                    height: 31,
+                  ),
                 ),
                 AppText.appText("Teacher: ${detailData["teacher"]}",
                     fontSize: 17,
@@ -623,8 +640,7 @@ class _DetailScreenState extends State<DetailScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
+          pushUntil(context, const SignInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -692,8 +708,7 @@ class _DetailScreenState extends State<DetailScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
+          pushUntil(context, const SignInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
