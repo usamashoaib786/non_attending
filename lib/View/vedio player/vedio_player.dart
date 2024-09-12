@@ -184,7 +184,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           activeColor: AppTheme.appColor,
                           value: _currentSliderValue,
                           min: 0,
-                          max: _controller.value.duration!.inSeconds.toDouble(),
+                          max: _controller.value.duration.inSeconds.toDouble(),
                           onChanged: (double value) {
                             setState(() {
                               _currentSliderValue = value;

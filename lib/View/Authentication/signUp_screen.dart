@@ -1,10 +1,9 @@
 import 'dart:developer';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_field.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
-import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Authentication/otpScreen.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
@@ -170,7 +169,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       isLoading = true;
     });
-    var response;
+    Response response;
     int responseCode200 = 200; // For successful request.
     int responseCode400 = 400; // For Bad Request.
     int responseCode401 = 401; // For Unauthorized access.
@@ -231,8 +230,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
-      showSnackBar(context, "Something went Wrong.");
+      Fluttertoast.showToast(msg: "Something went Wrong.");
       setState(() {
         isLoading = false;
       });

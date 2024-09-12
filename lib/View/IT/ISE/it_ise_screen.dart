@@ -6,7 +6,6 @@ import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
 import 'package:non_attending/View/Course%20View/course_view.dart';
-import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
