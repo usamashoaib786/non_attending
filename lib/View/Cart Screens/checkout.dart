@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
@@ -11,7 +9,6 @@ import 'package:non_attending/Utils/resources/rating.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_provider.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
-import 'package:non_attending/config/Apis%20Manager/apis_provider.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
