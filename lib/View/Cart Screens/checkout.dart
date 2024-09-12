@@ -8,8 +8,6 @@ import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/resources/rating.dart';
-import 'package:non_attending/Utils/utils.dart';
-import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_provider.dart';
 import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
@@ -43,7 +41,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void openCheckOut({amount, phone, email}) async {
     amount = amount * 100;
     var options = {
-      'key': "rzp_test_V90pgwENoCOEzq",
+      'key': "rzp_live_bMz0RWvMMqvJuW",
       'amount': amount,
       'name': 'Non Attending',
       'prefill': {
@@ -273,8 +271,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

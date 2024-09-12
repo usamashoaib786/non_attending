@@ -1,245 +1,214 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:non_attending/Utils/resources/app_text.dart';
+import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final String? url;
+  final String url;
 
-  const VideoPlayerScreen({Key? key, this.url}) : super(key: key);
+  const VideoPlayerScreen({Key? key, required this.url}) : super(key: key);
 
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _videoController;
-  late Future<void> _initializeVideoPlayerFuture;
-  bool _isVideoPlaying = false;
-  double _videoProgress = 0.0;
-  String? _videoError;
-  bool _showControls = false;
+  late VideoPlayerController _controller;
+  double _currentSliderValue = 0.0;
+  bool _isPlaying = false;
+  bool _showControls = true;
+  Timer? _hideControlsTimer;
 
   @override
   void initState() {
-    _videoController = VideoPlayerController.network(widget.url!);
-
-    _initializeVideoPlayerFuture = _videoController.initialize().then((_) {
-      setState(() {});
-      _videoController.play(); // Auto-play the video
-      _isVideoPlaying = true;
-    }).catchError((error) {
-      setState(() {
-        _videoError = 'Failed to load video: $error';
-      });
-    });
-    _videoController.addListener(() {
-      setState(() {
-        _videoProgress =
-            _videoController.value.position.inMilliseconds.toDouble();
-      });
-      if (_videoController.value.position >= _videoController.value.duration) {
-        _videoController
-            .seekTo(Duration.zero); // Restart the video when it reaches the end
-        _videoController.pause();
-        _isVideoPlaying = false;
-      }
-    });
     super.initState();
-  }
-
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _videoController.dispose();
-    // Reset preferred orientations when disposing the screen
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
-  }
-
-  void _toggleVideoPlayback() {
-    setState(() {
-      if (_isVideoPlaying) {
-        _videoController.pause();
+    _startHideControlsTimer();
+    diableFuction();
+    _controller = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
+      setState(() {});
+      _controller.play();
+      });
+    _controller.addListener(() {
+      if (_controller.value.isPlaying) {
+        setState(() {
+          _isPlaying = true;
+          _currentSliderValue = _controller.value.position.inSeconds.toDouble();
+        });
       } else {
-        _videoController.play();
+        setState(() {
+          _isPlaying = false;
+        });
       }
-      _isVideoPlaying = !_isVideoPlaying;
     });
   }
 
-  void _onVideoSliderChanged(double value) {
-    setState(() {
-      final Duration duration = _videoController.value.duration;
-      final newPosition = value * duration.inMilliseconds.toDouble();
-      _videoController.seekTo(Duration(milliseconds: newPosition.round()));
-      _videoProgress = value;
+  void _startHideControlsTimer() {
+    _hideControlsTimer?.cancel();
+    _hideControlsTimer = Timer(const Duration(seconds: 3), () {
+      setState(() {
+        _showControls = false;
+      });
     });
   }
 
-  String _formatDuration(Duration duration) {
-    final seconds = duration.inSeconds;
-    final minutes = (seconds / 60).floor();
-    final secondsRemainder = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${secondsRemainder.toString().padLeft(2, '0')}';
-  }
-
-  void _toggleControlsVisibility() {
-    setState(() {
-      _showControls = !_showControls;
-    });
+  diableFuction() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Set landscape mode
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-
-    return WillPopScope(
-      onWillPop: () async {
-        // Reset preferred orientations when back button is pressed
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true, // Show the back button
-          elevation: 0,
-          backgroundColor: Colors.transparent, // Make the app bar transparent
-        ),
-        extendBodyBehindAppBar: true, // Extend body behind the app bar
-        backgroundColor: Colors.black,
-        body: GestureDetector(
-          onTap: _toggleControlsVisibility,
-          child: Stack(
-            children: [
-              FutureBuilder(
-                future: _initializeVideoPlayerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (_videoError != null) {
-                      return Center(
-                        child: Text(
-                          // _videoError!,
-                          'Something went wrong. Please reload the page.',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    }
-                    return Center(
-                      child: AspectRatio(
-                        aspectRatio: _videoController.value.aspectRatio,
-                        child: VideoPlayer(_videoController),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Failed to load video.',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    print("ke fg ef ${widget.url}");
+    return OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          if (orientation == Orientation.landscape) {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+          } else {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+            SystemChrome.setPreferredOrientations([
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ]);
+          }
+          return Scaffold(
+            appBar: orientation == Orientation.landscape?null:AppBar(
+              backgroundColor: AppTheme.appColor,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset(
+                    "assets/images/back.png",
+                    height: 30,
+                  ),
+                ),
               ),
-              Visibility(
-                visible: _showControls,
-                child: Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 20,
-                  child: Column(
-                    children: [
-                      Slider(
-                        value: _videoProgress,
-                        min: 0.0,
-                        max: _videoController.value.duration.inMilliseconds
-                            .toDouble(),
-                        onChanged: _onVideoSliderChanged,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              _formatDuration(_videoController.value.position),
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              _formatDuration(_videoController.value.duration),
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
+              centerTitle: true,
+              title: AppText.appText("Video Player",
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  textColor: const Color(0xff0D2393)),
+            ),
+            resizeToAvoidBottomInset: false,
+            body: GestureDetector(
+              onTap: () {
+                if (orientation == Orientation.landscape) {
+                  setState(() {
+                    _showControls = !_showControls;
+                  });
+                  if (_showControls) {
+                    _startHideControlsTimer();
+                  }
+                }
+              },
+              child: Container(
+                width: screenWidth,
+                height: screenHeight,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color.fromARGB(255, 237, 216, 167), // 43%
+                      Color.fromARGB(255, 223, 214, 192), // 7.74%
+                      Color.fromARGB(255, 231, 221, 198), // 22.45%
                     ],
                   ),
                 ),
-              ),
-              Visibility(
-                visible: _showControls && !_isVideoPlaying,
                 child: Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 65,
-                      ),
-                      onPressed: _toggleVideoPlayback,
-                    ),
-                  ),
+                  child: _controller.value.isInitialized
+                      ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if(orientation == Orientation.landscape)...{
+                        Expanded(
+                          child: AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          ),
+                        ),
+                      }else...{
+                        AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller),
+                        ),
+                      },
+                      if (_showControls || orientation == Orientation.portrait)...{
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.replay_10),
+                              onPressed: () {
+                                _controller.seekTo(Duration(
+                                    seconds:
+                                    _controller.value.position.inSeconds - 10));
+                              },
+                            ),
+                            IconButton(
+                              icon: _isPlaying
+                                  ? Icon(Icons.pause)
+                                  : Icon(Icons.play_arrow),
+                              onPressed: () {
+                                setState(() {
+                                  if (_controller.value.isPlaying) {
+                                    _controller.pause();
+                                  } else {
+                                    _controller.play();
+                                  }
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.forward_10),
+                              onPressed: () {
+                                _controller.seekTo(Duration(
+                                    seconds:
+                                    _controller.value.position.inSeconds + 10));
+                              },
+                            ),
+                          ],
+                        ),
+                        Slider(
+                          thumbColor: AppTheme.appColor,
+                          activeColor: AppTheme.appColor,
+                          value: _currentSliderValue,
+                          min: 0,
+                          max: _controller.value.duration!.inSeconds.toDouble(),
+                          onChanged: (double value) {
+                            setState(() {
+                              _currentSliderValue = value;
+                            });
+                            _controller.seekTo(Duration(seconds: value.toInt()));
+                          },
+                        ),
+                      }
+                    ],
+                  )
+                      : const CircularProgressIndicator(),
                 ),
               ),
-              Visibility(
-                visible: _showControls && _isVideoPlaying,
-                child: Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.pause,
-                        color: Colors.white,
-                        size: 65,
-                      ),
-                      onPressed: _toggleVideoPlayback,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        }
     );
+
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+    _hideControlsTimer?.cancel();
   }
 }

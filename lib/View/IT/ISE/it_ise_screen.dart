@@ -5,8 +5,8 @@ import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
-import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Course%20View/course_view.dart';
+import 'package:non_attending/View/HomeScreen/homescreen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
@@ -61,7 +61,7 @@ class _ItScreenState extends State<ItScreen> {
     logger.init();
     getBranches(id: widget.id);
     getUserDetail();
-    
+
     super.initState();
   }
 
@@ -167,7 +167,6 @@ class _ItScreenState extends State<ItScreen> {
                                                 isBranch = false;
                                                 branchId =
                                                     branchdata[index]["id"];
-                                                getSubject(id: branchId);
                                               });
                                             },
                                             child: Container(
@@ -245,6 +244,7 @@ class _ItScreenState extends State<ItScreen> {
                                               "${semester[index]}";
                                           isSem = false;
                                           semId = index + 1;
+                                          getSubject();
                                         });
                                       },
                                       child: Container(
@@ -302,7 +302,8 @@ class _ItScreenState extends State<ItScreen> {
                               color: AppTheme.whiteColor),
                           child: branchId == null
                               ? Center(
-                                  child: AppText.appText("Select Branch First"),
+                                  child: AppText.appText(
+                                      "Select Branch and Semester"),
                                 )
                               : subjectData == null
                                   ? const Center(
@@ -461,8 +462,6 @@ class _ItScreenState extends State<ItScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -503,7 +502,7 @@ class _ItScreenState extends State<ItScreen> {
     }
   }
 
-  void getSubject({required id}) async {
+  void getSubject() async {
     isLoading = true;
     Response response;
     int responseCode200 = 200; // For successful request.
@@ -512,9 +511,7 @@ class _ItScreenState extends State<ItScreen> {
     int responseCode404 = 404; // For For data not found
     int responseCode422 = 422; // For For data not found
     int responseCode500 = 500; // Internal server error.
-    Map<String, dynamic> params = {
-      "id": id,
-    };
+    Map<String, dynamic> params = {"id": branchId, "semester_id": semId};
     try {
       response = await dio.post(path: AppUrls.getSubjects, data: params);
 
@@ -528,8 +525,6 @@ class _ItScreenState extends State<ItScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -598,8 +593,6 @@ class _ItScreenState extends State<ItScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading1 = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

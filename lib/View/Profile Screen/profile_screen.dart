@@ -357,7 +357,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }
                 },
                 child: Container(
-                  height: 70,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -365,7 +364,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 8),
-                    child: Stack(
+                    child: Row(
                       children: [
                         Image.asset(
                           apiProvider.savedData[index]["save_type"] == "pdf"
@@ -373,26 +372,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : "assets/images/vedioImg.png",
                           height: 50,
                         ),
+                        SizedBox(width: 20,),
                         Align(
                           alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              AppText.appText(
-                                  "${apiProvider.savedData[index]["course_title"]}",
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w600),
-                              AppText.appText(
-                                  apiProvider.savedData[index]["save_type"] ==
-                                          "pdf"
-                                      ? "${apiProvider.savedData[index]["chapters"]["title"]}"
-                                      : apiProvider.savedData[index]
-                                                  ["chapters"] ==
-                                              null
-                                          ? ""
-                                          : "${apiProvider.savedData[index]["chapters"]["title"]}/${apiProvider.savedData[index]["chapters"]["video_title"]}",
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w400),
-                            ],
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width - 130,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppText.appText(
+                                    "${apiProvider.savedData[index]["course_title"]}",
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600),
+                                AppText.appText(
+                                    apiProvider.savedData[index]["save_type"] ==
+                                            "pdf"
+                                        ? "${apiProvider.savedData[index]["chapters"]["title"]}"
+                                        : apiProvider.savedData[index]
+                                                    ["chapters"] ==
+                                                null
+                                            ? ""
+                                            : "${apiProvider.savedData[index]["chapters"]["title"]}/${apiProvider.savedData[index]["chapters"]["video_title"]}",
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400),
+                              ],
+                            ),
                           ),
                         )
                       ],
@@ -451,8 +455,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

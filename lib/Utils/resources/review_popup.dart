@@ -7,8 +7,6 @@ import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/resources/rating.dart';
-import 'package:non_attending/Utils/utils.dart';
-import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
 import 'package:non_attending/config/dio/app_logger.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
@@ -132,8 +130,6 @@ class _ReviewPopUpState extends State<ReviewPopUp> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

@@ -38,7 +38,7 @@ class _CourseViewScreenState extends State<CourseViewScreen> {
   void openCheckOut(amount) async {
     amount = amount * 100;
     var options = {
-      'key': "rzp_test_V90pgwENoCOEzq",
+      'key': "rzp_live_bMz0RWvMMqvJuW",
       'amount': amount,
       'name': 'Non Attending',
       'prefill': {

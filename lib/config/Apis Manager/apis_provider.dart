@@ -6,7 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/utils.dart';
-import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/config/keys/app_urls.dart';
 
 class ApiProvider extends ChangeNotifier {
@@ -34,7 +33,6 @@ class ApiProvider extends ChangeNotifier {
       } else if (response.statusCode == responseCode401) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
-        pushUntil(context, const SignInScreen());
         notifyListeners();
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -83,10 +81,7 @@ class ApiProvider extends ChangeNotifier {
         notifyListeners();
       } else if (response.statusCode == responseCode401) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
-
         isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         notifyListeners();
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -140,8 +135,6 @@ class ApiProvider extends ChangeNotifier {
       } else if (response.statusCode == responseCode401) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         isLoading = false;
-        pushUntil(context, const SignInScreen());
-
         notifyListeners();
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

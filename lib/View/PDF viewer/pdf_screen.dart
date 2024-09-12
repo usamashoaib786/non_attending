@@ -8,42 +8,54 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PdfViewerPage extends StatefulWidget {
-  final url;
+  final String url;
 
   const PdfViewerPage({super.key, required this.url});
+  
   @override
   _PdfViewerPageState createState() => _PdfViewerPageState();
 }
 
 class _PdfViewerPageState extends State<PdfViewerPage> {
-  late File Pfile;
+  File? Pfile;
   bool isLoading = false;
-  Future<void> loadNetwork(uurl) async {
+
+  Future<void> loadNetwork(String uurl) async {
     setState(() {
       isLoading = true;
     });
-    var url = '$uurl';
-    final response = await http.get(Uri.parse(url));
-    final bytes = response.bodyBytes;
-    final filename = basename(url);
-    final dir = await getApplicationDocumentsDirectory();
-    var file = File('${dir.path}/$filename');
-    await file.writeAsBytes(bytes, flush: true);
-    setState(() {
-      Pfile = file;
-    });
+    print("kvkrkkr ${widget.url}");
+    try {
+      var url = '$uurl';
+      final response = await http.get(Uri.parse(url));
 
-    print(Pfile);
-    setState(() {
-      isLoading = false;
-    });
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final filename = basename(url);
+        final dir = await getApplicationDocumentsDirectory();
+        var file = File('${dir.path}/$filename');
+        await file.writeAsBytes(bytes, flush: true);
+        setState(() {
+          Pfile = file;
+        });
+        print('PDF file downloaded: ${Pfile!.path}');
+      } else {
+        print('Failed to load PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error loading PDF: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   void initState() {
+    super.initState();
     loadNetwork(widget.url);
     diableFuction();
-    super.initState();
   }
 
   diableFuction() async {
@@ -75,11 +87,22 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Center(
-              child: PDFView(
-                filePath: Pfile.path,
-              ),
-            ),
+          : Pfile != null
+              ? PDFView(
+                  filePath: Pfile!.path,
+                  onRender: (_pages) {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                  onError: (error) {
+                    print('Error rendering PDF: $error');
+                  },
+                  onPageError: (page, error) {
+                    print('Error on page $page: $error');
+                  },
+                )
+              : const Center(child: Text("Error loading PDF")),
     );
   }
 }
