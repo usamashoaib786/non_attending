@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,18 +41,42 @@ class _OtpScreenState extends State<OtpScreen> {
   late AppDio dio;
   AppLogger logger = AppLogger();
 
+  Timer? _timer;
+  int _start = 60;
+  bool _canResend = false;
+
   @override
   void initState() {
     dio = AppDio(context);
     logger.init();
     super.initState();
     log('-=-=-=- phone -=-=- ${widget.phone}');
+    startTimer(); // Start the timer on screen load
   }
 
   @override
   void dispose() {
     _otpController.dispose();
+    _timer?.cancel(); // Cancel the timer when the screen is disposed
     super.dispose();
+  }
+
+  // Function to start the 60-second countdown timer
+  void startTimer() {
+    _canResend = false;
+    _start = 60;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        setState(() {
+          _canResend = true;
+          timer.cancel();
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
   }
 
   @override
@@ -104,6 +128,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     CustomAppFormField(
                       texthint: "Enter Otp",
                       controller: _otpController,
+                      keyboardType: TextInputType.number,
                       prefixImge: "assets/images/email.png",
                     ),
                   ],
@@ -153,6 +178,27 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                       ),
               ),
+              const SizedBox(height: 20),
+              // Resend OTP section
+              _canResend
+                  ? TextButton(
+                      onPressed: () {
+                        // Logic to resend OTP
+                        resendOtp();
+                      },
+                      child: Text(
+                        "Resend OTP",
+                        style: TextStyle(
+                          color: AppTheme.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : AppText.appText(
+                      "Resend OTP in $_start seconds",
+                      textColor: Colors.black,
+                      fontSize: 16,
+                    ),
             ],
           ),
         ),
@@ -165,19 +211,66 @@ class _OtpScreenState extends State<OtpScreen> {
       isLoading = true;
     });
     var response;
-    int responseCode200 = 200; // For successful request.
-    int responseCode400 = 400; // For Bad Request.
-    int responseCode401 = 401; // For Unauthorized access.
-    int responseCode404 = 404; // For For data not found
-    int responseCode422 = 422; // For For data not found
-
-    int responseCode500 = 500; // Internal server error.
+    int responseCode200 = 200;
     Map<String, dynamic> params = {
       "otp": _otpController.text,
       "email": widget.email,
     };
     try {
       response = await dio.post(path: AppUrls.verifyOtp, data: params);
+      var responseData = response.data;
+      if (response.statusCode == responseCode200) {
+        if (responseData["status"] == false) {
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
+          setState(() {
+            isLoading = false;
+            pushReplacement(
+                context,
+                ChangePasswordScreen(
+                  email: widget.email,
+                ));
+          });
+        }
+      } else {
+        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      showSnackBar(context, "Something went Wrong.");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void resendOtp() async {
+    setState(() {
+      startTimer();
+    });
+    Response response;
+    int responseCode200 = 200;
+    int responseCode400 = 400;
+    int responseCode401 = 401;
+    int responseCode404 = 404;
+    int responseCode422 = 422;
+    int responseCode500 = 500;
+
+    Map<String, dynamic> params = {
+      "template_id": "665d915cd6fc0557fa2d78a2",
+      "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
+      "mobile": "${widget.phone}",
+    };
+    log('-=-=- params -=- $params');
+    try {
+      response = await dio.post(
+          path: "https://control.msg91.com/api/v5/otp", data: params);
       var responseData = response.data;
       if (response.statusCode == responseCode400) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -205,34 +298,19 @@ class _OtpScreenState extends State<OtpScreen> {
           isLoading = false;
         });
       } else if (response.statusCode == responseCode200) {
-        if (responseData["status"] == false) {
-          Fluttertoast.showToast(msg: "${responseData["message"]}");
-          setState(() {
-            isLoading = false;
-          });
-
-          return;
-        } else {
-          Fluttertoast.showToast(msg: "${responseData["message"]}");
-          setState(() {
-            isLoading = false;
-            pushReplacement(
-                context,
-                ChangePasswordScreen(
-                  email: widget.email,
-                ));
-          });
-        }
+        setState(() {
+          isLoading = false;
+          log('-=- OTP SEND -=-');
+        });
       }
     } catch (e) {
-      showSnackBar(context, "Something went Wrong.");
+      Fluttertoast.showToast(msg: "Something went Wrong.");
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  //////////////////// phoneotp////////////////////////
   void verifyOtpPhone() async {
     setState(() {
       isLoading = true;
@@ -242,17 +320,17 @@ class _OtpScreenState extends State<OtpScreen> {
       "otp": _otpController.text,
       "mobile": "${widget.phone}",
     };
-Options options = Options(
-    headers: {
-      "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
-      HttpHeaders.acceptHeader: Application.json,
-    },
-  );
-
-     
+    Options options = Options(
+      headers: {
+        "authkey": "419616AEHyyCJfp4M9661e0e9cP1",
+        HttpHeaders.acceptHeader: Application.json,
+      },
+    );
     try {
       response = await dio.post(
-          path: "https://control.msg91.com/api/v5/otp/verify", data: params, options:options);
+          path: "https://control.msg91.com/api/v5/otp/verify",
+          data: params,
+          options: options);
       var responseData = response.data;
       if (response.statusCode == 200) {
         if (responseData["type"] == "error") {
@@ -260,8 +338,6 @@ Options options = Options(
           setState(() {
             isLoading = false;
           });
-
-          return;
         } else {
           Fluttertoast.showToast(msg: "${responseData["message"]}");
           setState(() {
@@ -277,6 +353,11 @@ Options options = Options(
       });
     }
   }
+
+  // void resendOtp() {
+  //   setState(() {
+  //     startTimer(); // Reset the timer
+  //     // Add your logic to resend OTP here, using the same
 
   ////// signup /////////////
   void signUp() async {
@@ -339,10 +420,10 @@ Options options = Options(
             isLoading = false;
           });
           var token = responseData["token"];
-          var id = responseData["User"]["id"];
-          var phone = responseData["User"]["mobile"];
-          var name = responseData["User"]["name"];
-          var email = responseData["User"]["email"];
+          var id = responseData["user"]["id"];
+          var phone = responseData["user"]["mobile"];
+          var name = responseData["user"]["name"];
+          var email = responseData["user"]["email"];
           var userId = id.toString();
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString(PrefKey.authorization, token ?? '');

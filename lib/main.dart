@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Non Attending',
+        title: 'Nonattendiing',
         theme: ThemeData(),
         home: const SplashScreen(),
       ),

@@ -589,10 +589,18 @@ class _ItScreenState extends State<ItScreen> {
           isLoading1 = false;
         });
       } else if (response.statusCode == responseCode401) {
-        Fluttertoast.showToast(msg: "${responseData["message"]}");
+        if (responseData["message"] == "Unauthenticated.") {
+           Fluttertoast.showToast(msg: "Please Login first");
         setState(() {
           isLoading1 = false;
         });
+        } else {
+
+           Fluttertoast.showToast(msg: "${responseData["message"]}");
+        setState(() {
+          isLoading1 = false;
+        });
+        }
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {

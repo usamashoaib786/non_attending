@@ -6,6 +6,8 @@ import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Cart%20Screens/cart_screen.dart';
 import 'package:non_attending/View/IT/ISE/it_ise_screen.dart';
 import 'package:non_attending/View/My%20Courses/my_course.dart';
+import 'package:non_attending/View/Privacy%20Policy/privacy.dart';
+import 'package:non_attending/View/Terms%20and%20Condition/condition.dart';
 import 'package:non_attending/config/keys/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -171,8 +173,16 @@ class _MyDrawerState extends State<MyDrawer> {
                       push(context, const MyCoursesScreen());
                     },
                     text: "My Courses"),
-                customColumn(onTap: () {}, text: "Privacy policy"),
-                customColumn(onTap: () {}, text: "Terms & Conditions"),
+                customColumn(
+                    onTap: () {
+                      push(context, const PrivacyScreen());
+                    },
+                    text: "Privacy policy"),
+                customColumn(
+                    onTap: () {
+                      push(context, const TermsConditionScreen());
+                    },
+                    text: "Terms & Conditions"),
                 if (token != null)
                   customColumn(
                       onTap: () async {

@@ -53,9 +53,10 @@ dependencies:
   video_player: ^2.8.6
   flutter_windowmanager: ^0.2.0
   share_plus: ^9.0.0
+  flutter_html: ^3.0.0-beta.2
 
 flutter_icons:
-  image_path: "assets/images/bgimage.png"
+  image_path: "assets/images/IMG_8885.PNG"
   android: true
   ios: true
 

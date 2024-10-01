@@ -16,6 +16,9 @@ class AppUrls {
   static const String buyNow = "buynow";
   static const String checkOut = "checkout";
   static const String myCourses = "mycourses";
+  static const String privacy = "privacypolicy";
+  static const String terms = "termsandcondition";
+
   static const String review = "addreview";
   static const String searchFree = "searchfreecourses";
   static const String searhPaid = "searchpaidcourses";

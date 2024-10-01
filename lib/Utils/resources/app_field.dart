@@ -34,6 +34,8 @@ class CustomAppFormField extends StatefulWidget {
   final InputBorder? errorBorder;
   final bool? readOnly;
   final int? lines;
+  final FocusNode? focusNode;
+  final TextInputType? keyboardType;
 
   const CustomAppFormField({
     super.key,
@@ -54,9 +56,11 @@ class CustomAppFormField extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.prefix,
     this.suffix,
+    this.focusNode,
     this.prefixIcon,
     this.suffixIcon,
     this.prefixIconColor,
+    this.keyboardType,
     this.suffixIconColor,
     this.fontweight,
     this.fontsize,
@@ -86,6 +90,7 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
           color: AppTheme.white,
           borderRadius: BorderRadius.circular(8)),
       child: TextField(
+        focusNode: widget.focusNode,
         maxLines: widget.lines ?? 1,
         readOnly: widget.readOnly ?? false,
         controller: widget.controller,
@@ -93,7 +98,7 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
         cursorHeight: 20,
         textAlign: TextAlign.center,
         cursorWidth: 2,
-        keyboardType: TextInputType.name,
+        keyboardType: widget.keyboardType ?? TextInputType.name,
         decoration: InputDecoration(
             prefixIcon: widget.prefixIcon == true
                 ? null
