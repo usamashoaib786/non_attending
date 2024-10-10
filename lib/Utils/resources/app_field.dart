@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 
 class CustomAppFormField extends StatefulWidget {
@@ -34,6 +35,7 @@ class CustomAppFormField extends StatefulWidget {
   final InputBorder? errorBorder;
   final bool? readOnly;
   final int? lines;
+  final List<TextInputFormatter>? inputFormat;
   final FocusNode? focusNode;
   final TextInputType? keyboardType;
 
@@ -58,6 +60,7 @@ class CustomAppFormField extends StatefulWidget {
     this.suffix,
     this.focusNode,
     this.prefixIcon,
+    this.inputFormat,
     this.suffixIcon,
     this.prefixIconColor,
     this.keyboardType,
@@ -90,6 +93,7 @@ class _CustomAppFormFieldState extends State<CustomAppFormField> {
           color: AppTheme.white,
           borderRadius: BorderRadius.circular(8)),
       child: TextField(
+        inputFormatters: widget.inputFormat,
         focusNode: widget.focusNode,
         maxLines: widget.lines ?? 1,
         readOnly: widget.readOnly ?? false,

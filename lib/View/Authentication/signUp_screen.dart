@@ -108,6 +108,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _phoneController.selection = TextSelection.fromPosition(
                               TextPosition(offset: _phoneController.text.length),
                             );
+                          } else {
+                            // Check if the value after "+91" is numeric
+                            String phoneNumber = value.substring(3); // Get the number after the prefix
+                            if (phoneNumber.isNotEmpty && !RegExp(r'^[0-9]*$').hasMatch(phoneNumber)) {
+                              // If the phone number contains non-numeric characters
+                              showSnackBar(context, "Phone number must be numeric after +91");
+                              _phoneController.text = "+91"; // Reset to just "+91"
+                              _phoneController.selection = TextSelection.fromPosition(
+                                TextPosition(offset: _phoneController.text.length),
+                              );
+                            }
                           }
                         },
                       ),
@@ -133,12 +144,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       )
                     : GestureDetector(
                         onTap: () {
+                          // Check all validations including the phone number
                           if (_nameController.text.isNotEmpty) {
                             if (_emailController.text.isNotEmpty) {
                               final RegExp emailRegex =
                                   RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                               if (emailRegex.hasMatch(_emailController.text)) {
-                                if (_phoneController.text.isNotEmpty) {
+                                if (_phoneController.text.length > 3 && 
+                                    RegExp(r'^\+91[0-9]+$').hasMatch(_phoneController.text)) {
                                   if (_passController.text.isNotEmpty) {
                                     if (_passController.text.length >= 8) {
                                       if (_cnfrmPassController.text.isNotEmpty) {
@@ -157,7 +170,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     showSnackBar(context, "Enter Password");
                                   }
                                 } else {
-                                  showSnackBar(context, "Enter Phone No.");
+                                  showSnackBar(context, "Phone number must start with +91 and be numeric");
                                 }
                               } else {
                                 showSnackBar(context, "Enter Valid Email");
@@ -254,12 +267,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           );
         });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "Something went Wrong.");
       setState(() {
         isLoading = false;
       });
+      log('Error: $e');
+      showSnackBar(context, "An error occurred, please try again.");
     }
   }
 }
