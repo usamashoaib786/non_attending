@@ -6,6 +6,7 @@ import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/resources/popUp.dart';
 import 'package:non_attending/Utils/resources/rating.dart';
 import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Detailed%20Screen/detail_screen.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
@@ -213,6 +214,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+        pushUntil(context, const SignInScreen());
+
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

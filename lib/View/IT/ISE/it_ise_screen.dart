@@ -5,6 +5,7 @@ import 'package:non_attending/Utils/resources/app_button.dart';
 import 'package:non_attending/Utils/resources/app_text.dart';
 import 'package:non_attending/Utils/resources/app_theme.dart';
 import 'package:non_attending/Utils/utils.dart';
+import 'package:non_attending/View/Authentication/signin_screen.dart';
 import 'package:non_attending/View/Course%20View/course_view.dart';
 import 'package:non_attending/View/bottomNavBar/nav_view.dart';
 import 'package:non_attending/config/dio/app_dio.dart';
@@ -461,6 +462,7 @@ class _ItScreenState extends State<ItScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+          pushUntil(context, const SignInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -524,6 +526,7 @@ class _ItScreenState extends State<ItScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+          pushUntil(context, const SignInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
@@ -590,16 +593,16 @@ class _ItScreenState extends State<ItScreen> {
         });
       } else if (response.statusCode == responseCode401) {
         if (responseData["message"] == "Unauthenticated.") {
-           Fluttertoast.showToast(msg: "Please Login first");
-        setState(() {
-          isLoading1 = false;
-        });
+          Fluttertoast.showToast(msg: "Please Login first");
+          setState(() {
+            isLoading1 = false;
+            pushUntil(context, const SignInScreen());
+          });
         } else {
-
-           Fluttertoast.showToast(msg: "${responseData["message"]}");
-        setState(() {
-          isLoading1 = false;
-        });
+          Fluttertoast.showToast(msg: "${responseData["message"]}");
+          setState(() {
+            isLoading1 = false;
+          });
         }
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");

@@ -455,6 +455,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
         setState(() {
           isLoading = false;
+        pushUntil(context, const SignInScreen());
+
         });
       } else if (response.statusCode == responseCode404) {
         Fluttertoast.showToast(msg: "${responseData["message"]}");
