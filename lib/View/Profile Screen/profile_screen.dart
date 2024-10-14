@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (image != null) {
       setState(() {
         _pickedFilePath = image.path;
-        print("electedfilePath${_pickedFilePath}");
+        print("electedfilePath$_pickedFilePath");
       });
     }
   }
@@ -372,7 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : "assets/images/vedioImg.png",
                           height: 50,
                         ),
-                        SizedBox(width: 20,),
+                        const SizedBox(width: 20,),
                         Align(
                           alignment: Alignment.center,
                           child: SizedBox(
@@ -420,7 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = true;
     });
-    var response;
+    Response response;
     int responseCode200 = 200; // For successful request.
     int responseCode400 = 400; // For Bad Request.
     int responseCode401 = 401; // For Unauthorized access.
@@ -491,7 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
+      print("Something went Wrong $e");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
         isLoading = false;

@@ -26,7 +26,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     });
     print("kvkrkkr ${widget.url}");
     try {
-      var url = '$uurl';
+      var url = uurl;
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
@@ -90,7 +90,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
           : Pfile != null
               ? PDFView(
                   filePath: Pfile!.path,
-                  onRender: (_pages) {
+                  onRender: (pages) {
                     setState(() {
                       isLoading = false;
                     });

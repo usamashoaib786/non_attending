@@ -495,7 +495,7 @@ class _ItScreenState extends State<ItScreen> {
         }
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
+      print("Something went Wrong $e");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
         isLoading = false;
@@ -559,7 +559,7 @@ class _ItScreenState extends State<ItScreen> {
         }
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
+      print("Something went Wrong $e");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
         isLoading = false;
@@ -644,7 +644,7 @@ class _ItScreenState extends State<ItScreen> {
         }
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
+      print("Something went Wrong $e");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
         isLoading1 = false;

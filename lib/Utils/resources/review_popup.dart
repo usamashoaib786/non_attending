@@ -187,10 +187,10 @@ class ReviewRating extends StatefulWidget {
   final int initialRating;
 
   const ReviewRating({
-    Key? key,
+    super.key,
     required this.onRatingChanged,
     this.initialRating = 0,
-  }) : super(key: key);
+  });
 
   @override
   _ReviewRatingState createState() => _ReviewRatingState();

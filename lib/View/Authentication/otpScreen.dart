@@ -210,7 +210,7 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() {
       isLoading = true;
     });
-    var response;
+    Response response;
     int responseCode200 = 200;
     Map<String, dynamic> params = {
       "otp": _otpController.text,
@@ -315,7 +315,7 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() {
       isLoading = true;
     });
-    var response;
+    Response response;
     Map<String, dynamic> params = {
       "otp": _otpController.text,
       "mobile": "${widget.phone}",
@@ -364,7 +364,7 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() {
       isLoading = true;
     });
-    var response;
+    Response response;
     int responseCode201 = 201; // For successful request.
     int responseCode400 = 400; // For Bad Request.
     int responseCode401 = 401; // For Unauthorized access.
@@ -441,7 +441,7 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       }
     } catch (e) {
-      print("Something went Wrong ${e}");
+      print("Something went Wrong $e");
       showSnackBar(context, "Something went Wrong.");
       setState(() {
         isLoading = false;

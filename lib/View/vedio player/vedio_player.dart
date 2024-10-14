@@ -10,7 +10,7 @@ import 'package:video_player/video_player.dart';
 class VideoPlayerScreen extends StatefulWidget {
   final String url;
 
-  const VideoPlayerScreen({Key? key, required this.url}) : super(key: key);
+  const VideoPlayerScreen({super.key, required this.url});
 
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
@@ -148,7 +148,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.replay_10),
+                              icon: const Icon(Icons.replay_10),
                               onPressed: () {
                                 _controller.seekTo(Duration(
                                     seconds:
@@ -157,8 +157,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             ),
                             IconButton(
                               icon: _isPlaying
-                                  ? Icon(Icons.pause)
-                                  : Icon(Icons.play_arrow),
+                                  ? const Icon(Icons.pause)
+                                  : const Icon(Icons.play_arrow),
                               onPressed: () {
                                 setState(() {
                                   if (_controller.value.isPlaying) {
@@ -170,7 +170,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.forward_10),
+                              icon: const Icon(Icons.forward_10),
                               onPressed: () {
                                 _controller.seekTo(Duration(
                                     seconds:
