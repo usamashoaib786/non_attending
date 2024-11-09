@@ -97,7 +97,13 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             ],
           ),
         ),
-        child: courseData == null
+        child: 
+        courseData == null
+            ?  Center(
+                child: AppText.appText("No course is found"),
+              )
+            :
+        courseData == null
             ? const Center(
                 child: CircularProgressIndicator(),
               )

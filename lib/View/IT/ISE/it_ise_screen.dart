@@ -144,58 +144,68 @@ class _ItScreenState extends State<ItScreen> {
                               ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: branchdata.length,
-                                  itemBuilder: (context, index) {
-                                    return Column(
-                                      children: [
-                                        if (index == 0)
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 20.0,
-                                              right: 20,
-                                              bottom: 20),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                selectedBranch =
-                                                    "${branchdata[index]["title"]}";
-                                                isBranch = false;
-                                                branchId =
-                                                    branchdata[index]["id"];
-                                              });
-                                            },
-                                            child: Container(
-                                              width: 219,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  color: const Color.fromARGB(
-                                                      255, 171, 182, 237)),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                              : branchdata.length < 1
+                                  ? Center(
+                                      child:
+                                          AppText.appText("No Branch is added"),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: branchdata.length,
+                                      itemBuilder: (context, index) {
+                                        return Column(
+                                          children: [
+                                            if (index == 0)
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 20.0,
+                                                  right: 20,
+                                                  bottom: 20),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedBranch =
+                                                        "${branchdata[index]["title"]}";
+                                                    isBranch = false;
+                                                    branchId =
+                                                        branchdata[index]["id"];
+                                                  });
+                                                },
+                                                child: Container(
+                                                  width: 219,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              171,
+                                                              182,
+                                                              237)),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
                                                         horizontal: 8.0,
                                                         vertical: 4),
-                                                child: Center(
-                                                  child: AppText.appText(
-                                                      "${branchdata[index]["title"]}",
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                                    child: Center(
+                                                      child: AppText.appText(
+                                                          "${branchdata[index]["title"]}",
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                )),
+                                          ],
+                                        );
+                                      },
+                                    )),
                     ),
                   const SizedBox(
                     height: 50,

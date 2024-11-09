@@ -1,4 +1,4 @@
-package com.example.non_attending
+package com.devmine.non_attending
 
 import io.flutter.embedding.android.FlutterActivity
 
